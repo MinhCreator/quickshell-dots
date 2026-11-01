@@ -5,12 +5,12 @@
 Una shell desktop completa fatta con [Quickshell](https://quickshell.org), per **niri** e **Hyprland**.
 Un'unica installazione, le stesse scorciatoie e gli stessi quattro stili su tutti e due i compositor.
 
-> ## ⚠️ Leggi qui prima di aprire una issue
+> ##  Leggi qui prima di aprire una issue
 >
 > Questo **non è un progetto per tutti**. L'ho fatto perché mi andava, e funziona sul **mio** portatile.
 > Non nasce per essere un prodotto: niente roadmap, niente supporto, niente promesse.
 >
-> 🤝 E non l'ho fatto nemmeno da solo: è un lavoro **a 4 mani con Claude** (la versione *free*, sì, davvero). Io decido cosa voglio, Claude scrive il codice, io lo rompo, Claude lo ripara. Ripetere.
+> E non l'ho fatto nemmeno da solo: è un lavoro **a 4 mani con Claude** (la versione *free*, sì, davvero). Io decido cosa voglio, Claude scrive il codice, io lo rompo, Claude lo ripara. Ripetere.
 >
 > - Su casa tua non funziona? Complimenti, hai trovato una nuova funzione. **Non è un problema mio** 🫡
 > - Pull request e idee sono benvenute, ma posso rispondere tra tre settimane o mai.
@@ -21,7 +21,7 @@ Un'unica installazione, le stesse scorciatoie e gli stessi quattro stili su tutt
 
 Non mi piacevano molto le shell che c'erano, e le rice che trovavo su GitHub non erano mai davvero *mie*. Così ho iniziato a costruirmi la mia.
 
-L'ispirazione viene da [SaneAspect](https://www.youtube.com/@saneAspect): sono partito dai suoi video. Per quanto ne so, lui le sue shell le fa a mano, senza IA, il contrario di quello che ho fatto io qui. Il suo corso non l'ho comprato (sono povero 💸), quindi ho imparato quello che ho potuto da ciò che è gratis, e il resto l'ho colmato con Claude.
+L'ispirazione viene da [SaneAspect](https://www.youtube.com/@saneAspect): sono partito dai suoi video. Per quanto ne so, lui le sue shell le fa a mano, senza IA, il contrario di quello che ho fatto io qui. Il suo corso non l'ho comprato (sono povero ), quindi ho imparato quello che ho potuto da ciò che è gratis, e il resto l'ho colmato con Claude.
 
 **Non ti va bene che sia fatto con un'IA?** Nessun problema. Ci sono tantissime shell bellissime scritte da persone: vai a usare quelle, e dai prima un'occhiata al canale di SaneAspect. Io sono solo uno dei tanti, e questa è solo roba mia.
 
