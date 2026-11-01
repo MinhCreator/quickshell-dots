@@ -17,6 +17,14 @@ One install, the same shortcuts and the same four styles on both compositors.
 > - Everything is MIT: fork it, bend it, make it yours. That is the whole point.
 > - It was tested on niri and Hyprland on Arch. Anything else: you are the tester now.
 
+## Why this exists
+
+I did not like most of the existing shells, and the rices I kept finding on GitHub were never quite *mine*. So I started building my own.
+
+The inspiration comes from [SaneAspect](https://www.youtube.com/@saneAspect): I started from his videos. As far as I know, he builds his shells by hand, without AI, which is the opposite of what I did here. I did not buy his course (I am broke 💸), so I learned what I could from what is free, and filled the rest with Claude.
+
+**Don't like that it was made with an AI?** That is completely fine. There are plenty of great shells written by humans: go and use those, and check out SaneAspect's channel first. I am just one of many, and this is just my own thing.
+
 ## Screenshots
 
 ### Vertical

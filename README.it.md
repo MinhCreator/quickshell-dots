@@ -17,6 +17,14 @@ Un'unica installazione, le stesse scorciatoie e gli stessi quattro stili su tutt
 > - È tutto MIT: fai un fork, piegalo, rendilo tuo. È proprio questo il punto.
 > - Provato su niri e Hyprland su Arch. Tutto il resto: il tester ora sei tu.
 
+## Perché esiste
+
+Non mi piacevano molto le shell che c'erano, e le rice che trovavo su GitHub non erano mai davvero *mie*. Così ho iniziato a costruirmi la mia.
+
+L'ispirazione viene da [SaneAspect](https://www.youtube.com/@saneAspect): sono partito dai suoi video. Per quanto ne so, lui le sue shell le fa a mano, senza IA, il contrario di quello che ho fatto io qui. Il suo corso non l'ho comprato (sono povero 💸), quindi ho imparato quello che ho potuto da ciò che è gratis, e il resto l'ho colmato con Claude.
+
+**Non ti va bene che sia fatto con un'IA?** Nessun problema. Ci sono tantissime shell bellissime scritte da persone: vai a usare quelle, e dai prima un'occhiata al canale di SaneAspect. Io sono solo uno dei tanti, e questa è solo roba mia.
+
 ## Screenshot
 
 ### Vertical
