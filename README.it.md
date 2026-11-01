@@ -5,6 +5,18 @@
 Una shell desktop completa fatta con [Quickshell](https://quickshell.org), per **niri** e **Hyprland**.
 Un'unica installazione, le stesse scorciatoie e gli stessi quattro stili su tutti e due i compositor.
 
+> ## ⚠️ Leggi qui prima di aprire una issue
+>
+> Questo **non è un progetto per tutti**. L'ho fatto perché mi andava, e funziona sul **mio** portatile.
+> Non nasce per essere un prodotto: niente roadmap, niente supporto, niente promesse.
+>
+> 🤝 E non l'ho fatto nemmeno da solo: è un lavoro **a 4 mani con Claude** (la versione *free*, sì, davvero). Io decido cosa voglio, Claude scrive il codice, io lo rompo, Claude lo ripara. Ripetere.
+>
+> - Su casa tua non funziona? Complimenti, hai trovato una nuova funzione. **Non è un problema mio** 🫡
+> - Pull request e idee sono benvenute, ma posso rispondere tra tre settimane o mai.
+> - È tutto MIT: fai un fork, piegalo, rendilo tuo. È proprio questo il punto.
+> - Provato su niri e Hyprland su Arch. Tutto il resto: il tester ora sei tu.
+
 ## Cosa trovi
 
 - **4 stili da cambiare al volo** (`Alt+S` apre il selettore, oppure `Mod+Alt+1..4`):
