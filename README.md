@@ -5,12 +5,12 @@
 A complete desktop shell built with [Quickshell](https://quickshell.org), for **niri** and **Hyprland**.
 One install, the same shortcuts and the same four styles on both compositors.
 
-> ## Read this before opening an issue
+> ## ⚠️ Read this before opening an issue
 >
 > This is **not a project for everyone**. I made it because I felt like it, and it works on **my** laptop.
 > It was not born to be a product: no roadmap, no support, no promises.
 >
-> It was also **not made by me alone**: it is a 4-hands job with **Claude** (the *free* version, yes, really). I decide what I want, Claude writes the code, I break it, Claude fixes it. Repeat.
+> 🤝 It was also **not made by me alone**: it is a 4-hands job with **Claude** (the *free* version, yes, really). I decide what I want, Claude writes the code, I break it, Claude fixes it. Repeat.
 >
 > - It breaks on your machine? Congratulations, you found a new feature. **Not my problem** 🫡
 > - Pull requests and ideas are welcome, but I may answer in three weeks or never.
@@ -21,7 +21,7 @@ One install, the same shortcuts and the same four styles on both compositors.
 
 I did not like most of the existing shells, and the rices I kept finding on GitHub were never quite *mine*. So I started building my own.
 
-The inspiration comes from [SaneAspect](https://www.youtube.com/@saneAspect): I started from his videos. As far as I know, he builds his shells by hand, without AI, which is the opposite of what I did here. I did not buy his course (I am broke ), so I learned what I could from what is free, and filled the rest with Claude.
+The inspiration comes from [SaneAspect](https://www.youtube.com/@saneAspect): I started from his videos. As far as I know, he builds his shells by hand, without AI, which is the opposite of what I did here. I did not buy his course (I am broke 💸), so I learned what I could from what is free, and filled the rest with Claude.
 
 **Don't like that it was made with an AI?** That is completely fine. There are plenty of great shells written by humans: go and use those, and check out SaneAspect's channel first. I am just one of many, and this is just my own thing.
 
@@ -71,6 +71,9 @@ The inspiration comes from [SaneAspect](https://www.youtube.com/@saneAspect): I 
 - Wallpaper picker; the colors of the whole shell (and Firefox, with Pywalfox) follow the wallpaper through pywal.
 - Screenshots and screen recording (with a name prompt and audio choice), media player with a live audio spectrum.
 - Volume / brightness OSD, clipboard history.
+- **Light / Dark mode** (`Mod+Alt+T`): regenerates the pywal palette with `wal -l`, so the shell, kitty and Firefox all go light or dark together.
+- **10 themes per mode** (`Alt+T` opens the picker): they don't touch pywal, they only change how the shell uses its colors (accent, background, borders, text). Classic, Vivid, Complement, Triad, Analog, Mono, Tinted, Sober, Contrast, Neon. Cheap: no heavy effects.
+
 
 ## Install
 
@@ -118,6 +121,8 @@ Put your images in `<Pictures>/Wallpapers` (for example `~/Pictures/Wallpapers` 
 | `Alt+D` | Do Not Disturb |
 | `Mod+Space` | next keyboard layout |
 | `Alt+S` | style picker |
+| `Alt+T` | theme picker (arrows preview live, `Tab` light/dark) |
+| `Mod+Alt+T` | toggle light / dark |
 | `Mod+Alt+1..4` | Island / Classic / Dashboard / Vertical |
 | `Print` | screenshot and recording menu |
 | `Mod+H` / `Mod+Shift+H` / `Mod+Ctrl+H` | screenshot: screen / area / window |
@@ -134,7 +139,7 @@ Put your images in `<Pictures>/Wallpapers` (for example `~/Pictures/Wallpapers` 
 Only on niri: `Mod+Tab` overview, `Mod+J` width presets, `Mod+,` `Mod+.` columns.
 Only on Hyprland: `Mod+Tab` pin workspaces, `Mod+J` toggle split, `Mod+P` pseudo, `Mod+S` scratchpad.
 
-Everything is also a command: `qs ipc call <target> <function>` (for example `qs ipc call style set side`).
+Everything is also a command: `qs ipc call <target> <function>` (for example `qs ipc call style set side`). Theme commands: `qs ipc call theme toggle`, `theme set <name>`, `theme mode <dark|light|toggle>`.
 
 ## Layout of the repository
 

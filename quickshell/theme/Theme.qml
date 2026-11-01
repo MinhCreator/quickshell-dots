@@ -3,6 +3,7 @@ pragma Singleton
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import "themes.js" as ThemeLib
 
 Singleton {
     id: root
@@ -22,13 +23,22 @@ Singleton {
                 property string foreground: "#e6e6e6"
             }
             property JsonObject colors: JsonObject {
+                property string color0: "#0d0d0d"
                 property string color1: "#e06c75"
                 property string color2: "#98c379"
                 property string color3: "#e5c07b"
                 property string color4: "#3ecfa8"
                 property string color5: "#c678dd"
                 property string color6: "#56b6c2"
+                property string color7: "#e6e6e6"
                 property string color8: "#5c6370"
+                property string color9: "#e06c75"
+                property string color10: "#98c379"
+                property string color11: "#e5c07b"
+                property string color12: "#3ecfa8"
+                property string color13: "#c678dd"
+                property string color14: "#56b6c2"
+                property string color15: "#ffffff"
             }
         }
     }
@@ -46,18 +56,41 @@ Singleton {
                        a.b + (b.b - a.b) * t, 1)
     }
 
-    // ---- Colori semantici ----
-    readonly property color background: pal.special.background
-    readonly property color foreground: pal.special.foreground
-    readonly property color accent:     pal.colors.color4   // change the number for another accent
-    readonly property color note:       pal.colors.color5   // days with notes
-    readonly property color muted:      mix(background, foreground, 0.45)
-    readonly property color danger:     pal.colors.color1
+    // ---- Palette as plain data (for the theme recipes) ----
+    readonly property var palette: ({
+        bg: pal.special.background,
+        fg: pal.special.foreground,
+        c: [pal.colors.color0, pal.colors.color1, pal.colors.color2, pal.colors.color3,
+            pal.colors.color4, pal.colors.color5, pal.colors.color6, pal.colors.color7,
+            pal.colors.color8, pal.colors.color9, pal.colors.color10, pal.colors.color11,
+            pal.colors.color12, pal.colors.color13, pal.colors.color14, pal.colors.color15]
+    })
 
-    readonly property color island:       mix(background, Qt.rgba(0, 0, 0, 1), 0.5)
-    readonly property color islandHover:  mix(island, foreground, 0.10)
-    readonly property color surfaceSoft:  mix(island, foreground, 0.06)
-    readonly property color border:       mix(island, foreground, 0.10)
+    // light scheme = pywal generated it with `wal -l` (the background is light)
+    readonly property bool light: ThemeLib.lightness(palette.bg) > 0.5
+
+    // the colors of the current theme (see theme/themes.js)
+    readonly property var scheme: ThemeLib.compute(palette, Appearance.theme, light)
+
+    // the same recipe applied to any theme, to draw the previews in the selector
+    function preview(id) { return ThemeLib.compute(palette, id, light) }
+
+    // ---- Semantic colors ----
+    readonly property color background:  scheme.background
+    readonly property color foreground:  scheme.foreground
+    readonly property color accent:      scheme.accent
+    readonly property color note:        scheme.note      // days with notes
+    readonly property color muted:       scheme.muted
+    readonly property color danger:      scheme.danger
+
+    readonly property color island:       scheme.island
+    readonly property color islandHover:  scheme.islandHover
+    readonly property color surfaceSoft:  scheme.surfaceSoft
+    readonly property color border:       scheme.border
+
+    // veil over cover art and wallpapers so the text stays readable
+    // (dark in dark mode, light in light mode)
+    readonly property color scrim: Qt.rgba(island.r, island.g, island.b, 0.58)
 
     // ---- Dimensioni ----
     readonly property int islandHeight: 34

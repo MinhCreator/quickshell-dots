@@ -99,7 +99,7 @@ Rectangle {
         // Darkens so the text is easy to read
         Rectangle {
             anchors.fill: parent
-            color: Qt.rgba(0, 0, 0, 0.5)
+            color: Theme.scrim
         }
     }
 

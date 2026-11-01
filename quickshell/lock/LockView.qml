@@ -75,7 +75,7 @@ Item {
 
     Rectangle {
         anchors.fill: parent
-        color: Qt.rgba(0, 0, 0, 0.5)
+        color: Theme.scrim
     }
 
     MouseArea {

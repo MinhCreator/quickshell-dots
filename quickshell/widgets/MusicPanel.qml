@@ -41,7 +41,7 @@ Item {
         Rectangle {
             anchors.fill: parent
             visible: Media.active && Media.artUrl !== ""
-            color: Qt.rgba(0, 0, 0, 0.5)
+            color: Theme.scrim
         }
 
         // The record

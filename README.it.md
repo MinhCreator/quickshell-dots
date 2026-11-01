@@ -5,12 +5,12 @@
 Una shell desktop completa fatta con [Quickshell](https://quickshell.org), per **niri** e **Hyprland**.
 Un'unica installazione, le stesse scorciatoie e gli stessi quattro stili su tutti e due i compositor.
 
-> ##  Leggi qui prima di aprire una issue
+> ## ⚠️ Leggi qui prima di aprire una issue
 >
 > Questo **non è un progetto per tutti**. L'ho fatto perché mi andava, e funziona sul **mio** portatile.
 > Non nasce per essere un prodotto: niente roadmap, niente supporto, niente promesse.
 >
-> E non l'ho fatto nemmeno da solo: è un lavoro **a 4 mani con Claude** (la versione *free*, sì, davvero). Io decido cosa voglio, Claude scrive il codice, io lo rompo, Claude lo ripara. Ripetere.
+> 🤝 E non l'ho fatto nemmeno da solo: è un lavoro **a 4 mani con Claude** (la versione *free*, sì, davvero). Io decido cosa voglio, Claude scrive il codice, io lo rompo, Claude lo ripara. Ripetere.
 >
 > - Su casa tua non funziona? Complimenti, hai trovato una nuova funzione. **Non è un problema mio** 🫡
 > - Pull request e idee sono benvenute, ma posso rispondere tra tre settimane o mai.
@@ -21,7 +21,7 @@ Un'unica installazione, le stesse scorciatoie e gli stessi quattro stili su tutt
 
 Non mi piacevano molto le shell che c'erano, e le rice che trovavo su GitHub non erano mai davvero *mie*. Così ho iniziato a costruirmi la mia.
 
-L'ispirazione viene da [SaneAspect](https://www.youtube.com/@saneAspect): sono partito dai suoi video. Per quanto ne so, lui le sue shell le fa a mano, senza IA, il contrario di quello che ho fatto io qui. Il suo corso non l'ho comprato (sono povero ), quindi ho imparato quello che ho potuto da ciò che è gratis, e il resto l'ho colmato con Claude.
+L'ispirazione viene da [SaneAspect](https://www.youtube.com/@saneAspect): sono partito dai suoi video. Per quanto ne so, lui le sue shell le fa a mano, senza IA, il contrario di quello che ho fatto io qui. Il suo corso non l'ho comprato (sono povero 💸), quindi ho imparato quello che ho potuto da ciò che è gratis, e il resto l'ho colmato con Claude.
 
 **Non ti va bene che sia fatto con un'IA?** Nessun problema. Ci sono tantissime shell bellissime scritte da persone: vai a usare quelle, e dai prima un'occhiata al canale di SaneAspect. Io sono solo uno dei tanti, e questa è solo roba mia.
 
@@ -71,6 +71,9 @@ L'ispirazione viene da [SaneAspect](https://www.youtube.com/@saneAspect): sono p
 - Selettore wallpaper; i colori di tutta la shell (e di Firefox, con Pywalfox) seguono lo sfondo tramite pywal.
 - Screenshot e registrazione schermo (con richiesta del nome e scelta dell'audio), player multimediale con spettro audio in tempo reale.
 - OSD volume / luminosità, cronologia appunti.
+- **Modalità chiaro / scuro** (`Mod+Alt+T`): rigenera la palette pywal con `wal -l`, così shell, kitty e Firefox diventano chiari o scuri insieme.
+- **10 temi per modalità** (`Alt+T` apre il selettore): non toccano pywal, cambiano solo come la shell usa i suoi colori (accento, sfondo, bordi, testo). Classic, Vivid, Complement, Triad, Analog, Mono, Tinted, Sober, Contrast, Neon. Leggeri: nessun effetto pesante.
+
 
 ## Installazione
 
@@ -118,6 +121,8 @@ Metti le immagini in `<Immagini>/Wallpapers` (ad esempio `~/Immagini/Wallpapers`
 | `Alt+D` | Non disturbare |
 | `Mod+Space` | layout tastiera successivo |
 | `Alt+S` | selettore degli stili |
+| `Alt+T` | selettore temi (le frecce mostrano l'anteprima, `Tab` chiaro/scuro) |
+| `Mod+Alt+T` | alterna chiaro / scuro |
 | `Mod+Alt+1..4` | Island / Classic / Dashboard / Vertical |
 | `Print` | menu screenshot e registrazione |
 | `Mod+H` / `Mod+Shift+H` / `Mod+Ctrl+H` | screenshot: schermo / area / finestra |
@@ -134,7 +139,7 @@ Metti le immagini in `<Immagini>/Wallpapers` (ad esempio `~/Immagini/Wallpapers`
 Solo niri: `Mod+Tab` overview, `Mod+J` larghezze predefinite, `Mod+,` `Mod+.` colonne.
 Solo Hyprland: `Mod+Tab` fissa i workspace, `Mod+J` cambia divisione, `Mod+P` pseudo, `Mod+S` scratchpad.
 
-Tutto è anche un comando: `qs ipc call <target> <funzione>` (per esempio `qs ipc call style set side`).
+Tutto è anche un comando: `qs ipc call <target> <funzione>` (per esempio `qs ipc call style set side`). Comandi tema: `qs ipc call theme toggle`, `theme set <nome>`, `theme mode <dark|light|toggle>`.
 
 ## Com'è fatto il repository
 

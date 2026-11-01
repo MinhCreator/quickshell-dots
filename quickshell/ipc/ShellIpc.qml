@@ -3,6 +3,7 @@ import QtQuick
 import Quickshell
 import Quickshell.Io
 import qs.services
+import qs.theme
 
 Scope {
     // qs ipc call power toggle
@@ -107,6 +108,19 @@ Scope {
     }
 
     // qs ipc call audio dump   (writes the PipeWire nodes the shell sees to the log)
+    // qs ipc call theme toggle        (opens the theme selector)
+    // qs ipc call theme set <name>    (classic vivid complement triad analog mono tinted sober contrast neon)
+    // qs ipc call theme mode light|dark|toggle   (also repaints the terminal and Firefox through pywal)
+    IpcHandler {
+        target: "theme"
+
+        function toggle(): void { Appearance.togglePicker() }
+        function open(): void { Appearance.pickerOpen = true }
+        function close(): void { Appearance.pickerOpen = false }
+        function set(name: string): void { Appearance.setTheme(name) }
+        function mode(m: string): void { Appearance.setMode(m) }
+    }
+
     IpcHandler {
         target: "audio"
 

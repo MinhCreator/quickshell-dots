@@ -173,7 +173,7 @@ Scope {
                 // ----- Darkened background (the blur is added by the Hyprland rule) -----
                 Rectangle {
                     anchors.fill: parent
-                    color: Qt.rgba(0, 0, 0, 0.55)
+                    color: Theme.scrim
                 }
 
                 Timer { id: wheelCool; interval: 90 }

@@ -19,5 +19,6 @@ ShellRoot {
     SysPill {}
     Hello {}
     StylePicker {}
+    ThemePicker {}
     Identify {}
 }
