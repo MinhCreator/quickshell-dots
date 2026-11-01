@@ -25,6 +25,10 @@ The inspiration comes from [SaneAspect](https://www.youtube.com/@saneAspect): I 
 
 **Don't like that it was made with an AI?** That is completely fine. There are plenty of great shells written by humans: go and use those, and check out SaneAspect's channel first. I am just one of many, and this is just my own thing.
 
+## Credits
+
+**[SaneAspect](https://www.youtube.com/@saneAspect)**: a guy who makes excellent tutorials that help people learn Quickshell, and does it very well. Go and watch his channel.
+
 ## Screenshots
 
 ### Vertical

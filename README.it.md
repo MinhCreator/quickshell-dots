@@ -25,6 +25,10 @@ L'ispirazione viene da [SaneAspect](https://www.youtube.com/@saneAspect): sono p
 
 **Non ti va bene che sia fatto con un'IA?** Nessun problema. Ci sono tantissime shell bellissime scritte da persone: vai a usare quelle, e dai prima un'occhiata al canale di SaneAspect. Io sono solo uno dei tanti, e questa è solo roba mia.
 
+## Crediti
+
+**[SaneAspect](https://www.youtube.com/@saneAspect)**: un ragazzo che fa ottimi tutorial che aiutano le persone a imparare Quickshell, e lo fa molto bene. Vai a vedere il suo canale.
+
 ## Screenshot
 
 ### Vertical
