@@ -17,6 +17,39 @@ One install, the same shortcuts and the same four styles on both compositors.
 > - Everything is MIT: fork it, bend it, make it yours. That is the whole point.
 > - It was tested on niri and Hyprland on Arch. Anything else: you are the tester now.
 
+## Screenshots
+
+### Vertical
+
+<p>
+<img src="docs/side-bar.jpg" alt="Vertical: the bar" width="49%">
+<img src="docs/side-calendar.jpg" alt="Vertical: calendar panel" width="49%">
+<img src="docs/side-music.jpg" alt="Vertical: music panel" width="49%">
+<img src="docs/side-quick.jpg" alt="Vertical: quick settings" width="49%">
+</p>
+
+### Dashboard
+
+<p>
+<img src="docs/dash-peek.jpg" alt="Dashboard: peek" width="49%">
+<img src="docs/dash-open.jpg" alt="Dashboard: open" width="49%">
+</p>
+
+### Island
+
+<p>
+<img src="docs/island-music.jpg" alt="Island: music" width="49%">
+<img src="docs/island-calendar.jpg" alt="Island: calendar" width="49%">
+<img src="docs/island-quick.jpg" alt="Island: quick settings" width="49%">
+</p>
+
+### Style and wallpaper pickers
+
+<p>
+<img src="docs/styles.jpg" alt="Style picker" width="49%">
+<img src="docs/wallpapers.jpg" alt="Wallpaper picker" width="49%">
+</p>
+
 ## What you get
 
 - **4 styles you can switch live** (`Alt+S` opens the picker, or `Mod+Alt+1..4`):

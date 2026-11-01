@@ -17,6 +17,39 @@ Un'unica installazione, le stesse scorciatoie e gli stessi quattro stili su tutt
 > - È tutto MIT: fai un fork, piegalo, rendilo tuo. È proprio questo il punto.
 > - Provato su niri e Hyprland su Arch. Tutto il resto: il tester ora sei tu.
 
+## Screenshot
+
+### Vertical
+
+<p>
+<img src="docs/side-bar.jpg" alt="Vertical: the bar" width="49%">
+<img src="docs/side-calendar.jpg" alt="Vertical: calendar panel" width="49%">
+<img src="docs/side-music.jpg" alt="Vertical: music panel" width="49%">
+<img src="docs/side-quick.jpg" alt="Vertical: quick settings" width="49%">
+</p>
+
+### Dashboard
+
+<p>
+<img src="docs/dash-peek.jpg" alt="Dashboard: peek" width="49%">
+<img src="docs/dash-open.jpg" alt="Dashboard: open" width="49%">
+</p>
+
+### Island
+
+<p>
+<img src="docs/island-music.jpg" alt="Island: music" width="49%">
+<img src="docs/island-calendar.jpg" alt="Island: calendar" width="49%">
+<img src="docs/island-quick.jpg" alt="Island: quick settings" width="49%">
+</p>
+
+### Selettori di stile e wallpaper
+
+<p>
+<img src="docs/styles.jpg" alt="Style picker" width="49%">
+<img src="docs/wallpapers.jpg" alt="Wallpaper picker" width="49%">
+</p>
+
 ## Cosa trovi
 
 - **4 stili da cambiare al volo** (`Alt+S` apre il selettore, oppure `Mod+Alt+1..4`):
