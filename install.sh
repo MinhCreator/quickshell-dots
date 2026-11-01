@@ -126,29 +126,34 @@ put() { # put SRC DST
 
 # ── other shells (noctalia, caelestia, DMS...) ──
 step "4/6" "Looking for other shells that would conflict"
-# name|folders (relative to $HOME)|process|packages|systemd user unit
-shells="noctalia|.config/noctalia .cache/noctalia|noctalia-shell|noctalia-shell|noctalia
-caelestia|.config/caelestia .local/state/caelestia .local/share/caelestia|caelestia|caelestia-shell caelestia-cli|
-dms|.config/DankMaterialShell .local/state/DankMaterialShell .cache/DankMaterialShell|dms|dms-shell-bin dms-shell-git dms-shell dankmaterialshell|dms
-illogical-impulse|.config/illogical-impulse||illogical-impulse-quickshell-git|"
+# name;folders (relative to $HOME);regex of the running process (full command line);packages;systemd user unit
+shells="noctalia;.config/noctalia .cache/noctalia;^([^ ]*/)?(noctalia-shell|(quickshell|qs) .*noctalia);noctalia-shell;noctalia
+caelestia;.config/caelestia .local/state/caelestia .local/share/caelestia;^([^ ]*/)?(caelestia|(quickshell|qs) .*caelestia);caelestia-shell caelestia-cli;
+dms;.config/DankMaterialShell .local/state/DankMaterialShell .cache/DankMaterialShell;^([^ ]*/)?(dms|(quickshell|qs) .*(dms|DankMaterialShell));dms-shell-bin dms-shell-git dms-shell dankmaterialshell;dms
+illogical-impulse;.config/illogical-impulse;^([^ ]*/)?(quickshell|qs) .*-c ii( |$);illogical-impulse-quickshell-git;"
 # only stopped, never uninstalled: bars and notification daemons (our shell has its own)
 others="waybar hyprpanel ags eww mako dunst swaync swayosd-server"
+# any Quickshell started with a config of its own (-c name / -p path) is not ours
+qsother='^([^ ]*/)?(quickshell|qs) (.* )?(-c|--config|-p|--path)( |$)'
 
-found=""
-OLDIFS=$IFS; IFS='
+nl='
 '
+found=""
+IFS_SAVE=$IFS; IFS=$nl
 for line in $shells; do
-    IFS=$OLDIFS
-    name=${line%%|*}; rest=${line#*|}; dirs=${rest%%|*}; rest=${rest#*|}; proc=${rest%%|*}; rest=${rest#*|}; pk=${rest%%|*}; unit=${rest#*|}
+    IFS=";"; set -f; set -- $line; set +f; IFS=$IFS_SAVE
+    name=$1; dirs=$2; proc=$3; pk=$4
     hit=""
     for d in $dirs; do [ -e "$HOME/$d" ] && hit=1; done
-    [ -n "$proc" ] && pgrep -x "$proc" >/dev/null 2>&1 && hit=1
-    for p in $pk; do command -v pacman >/dev/null 2>&1 && pacman -Q "$p" >/dev/null 2>&1 && hit=1; done
+    [ -n "$proc" ] && pgrep -f -- "$proc" >/dev/null 2>&1 && hit=1
+    if command -v pacman >/dev/null 2>&1; then
+        for p in $pk; do pacman -Q "$p" >/dev/null 2>&1 && hit=1; done
+    fi
     [ -n "$hit" ] && { found="$found $name"; say "found: $name"; }
-    IFS='
-'
+    IFS=$nl
 done
-IFS=$OLDIFS
+IFS=$IFS_SAVE
+
 # Quickshell configs of other shells living next to ours (~/.config/quickshell/<name>/shell.qml)
 sub=""
 for f in "$cfg"/quickshell/*/shell.qml; do
@@ -157,9 +162,19 @@ for f in "$cfg"/quickshell/*/shell.qml; do
     [ -e "$here/quickshell/$n/shell.qml" ] && continue
     sub="$sub $d"; say "found: another Quickshell config in quickshell/$n"
 done
+runqs=$(pgrep -af -- "$qsother" 2>/dev/null || true)
+[ -n "$runqs" ] && { found="$found quickshell-other"; say "found: a Quickshell shell is running with its own config:"; printf '%s\n' "$runqs" | sed 's/^/        /'; }
 running=""
 for p in $others; do pgrep -x "$p" >/dev/null 2>&1 && running="$running $p"; done
 [ -n "$running" ] && say "running and will be stopped:$running"
+# old autostart lines of other shells in the compositor files (our config.kdl / hyprland.lua replace them)
+auto=$(grep -lisE 'noctalia|caelestia|dms |DankMaterialShell|hyprpanel|waybar|ags ' "$cfg"/niri/*.kdl "$cfg"/hypr/*.lua "$cfg"/hypr/*.conf 2>/dev/null || true)
+[ -n "$auto" ] && say "they are also started from: $(printf '%s' "$auto" | tr '\n' ' ')"
+
+stop_other() {
+    pkill -f -- "$qsother" 2>/dev/null || true
+    for p in $running; do pkill -x "$p" 2>/dev/null || true; done
+}
 
 if [ -z "$found$sub$running" ]; then
     say "none: nothing to remove"
@@ -173,15 +188,13 @@ else
         n|N) say "skipped: they may fight with this shell (two bars, two notification daemons)" ;;
         *)
             mkdir -p "$bk/removed"
-            OLDIFS=$IFS; IFS='
-'
+            IFS=$nl
             for line in $shells; do
-                IFS=$OLDIFS
-                name=${line%%|*}; rest=${line#*|}; dirs=${rest%%|*}; rest=${rest#*|}; proc=${rest%%|*}; rest=${rest#*|}; pk=${rest%%|*}; unit=${rest#*|}
-                case " $found " in *" $name "*) ;; *) IFS='
-'; continue ;; esac
+                IFS=";"; set -f; set -- $line; set +f; IFS=$IFS_SAVE
+                name=$1; dirs=$2; proc=$3; pk=$4; unit=$5
+                case " $found " in *" $name "*) ;; *) IFS=$nl; continue ;; esac
                 say "$name: stopping"
-                [ -n "$proc" ] && pkill -x "$proc" 2>/dev/null || true
+                [ -n "$proc" ] && pkill -f -- "$proc" 2>/dev/null || true
                 [ -n "$unit" ] && systemctl --user disable --now "$unit" >/dev/null 2>&1 || true
                 for d in $dirs; do
                     if [ -e "$HOME/$d" ]; then
@@ -195,16 +208,15 @@ else
                     for p in $pk; do pacman -Q "$p" >/dev/null 2>&1 && inst="$inst $p"; done
                     [ -n "$inst" ] && { say "$name: uninstalling$inst"; sudo pacman -Rns --noconfirm $inst || say "could not uninstall"; }
                 fi
-                IFS='
-'
+                IFS=$nl
             done
-            IFS=$OLDIFS
-            pkill -f 'qs -c (noctalia-shell|noctalia|caelestia|dms|ii)' 2>/dev/null || true
+            IFS=$IFS_SAVE
+            stop_other
             for d in $sub; do
                 n=$(basename "$d"); mkdir -p "$bk/removed/quickshell"
                 mv "$d" "$bk/removed/quickshell/$n"; say "moved quickshell/$n to the backup"
             done
-            for p in $running; do say "stopping $p"; pkill -x "$p" 2>/dev/null || true; done
+            [ -n "$running" ] && say "stopped:$running"
             # leftovers of these shells in the compositor folders
             for f in niri/noctalia.kdl niri/dms hypr/noctalia.lua hypr/noctalia hypr/dms; do
                 if [ -e "$cfg/$f" ]; then mkdir -p "$bk/removed/$(dirname "$f")"; mv "$cfg/$f" "$bk/removed/$f"; say "moved $f to the backup"; fi
@@ -262,7 +274,32 @@ fi
 n=$(ls "$wp" 2>/dev/null | grep -ciE '\.(jpe?g|png|webp)$' || true)
 say "$n image(s) there. Put more in that folder: Alt+W opens the picker."
 
+
+# ── autostart ──
+ok_auto=1
+if [ -n "$want_niri" ]; then
+    grep -qE 'spawn-at-startup[^\n]*"(quickshell|qs)"' "$cfg/niri/config.kdl" 2>/dev/null || {
+        ok_auto=""; say "WARNING: $cfg/niri/config.kdl does not start the shell. Add:  spawn-at-startup \"quickshell\""; }
+fi
+if [ -n "$want_hypr" ]; then
+    grep -qE 'exec_cmd\("(quickshell|qs)"\)' "$cfg/hypr/hyprland.lua" 2>/dev/null || {
+        ok_auto=""; say "WARNING: $cfg/hypr/hyprland.lua does not start the shell. Add in hl.on(\"hyprland.start\"):  hl.exec_cmd(\"qs\")"; }
+fi
+[ -n "$ok_auto" ] && say "autostart: ok (the shell starts by itself at every login)"
+
+# ── start it now, if we are inside a session ──
+if [ -n "$WAYLAND_DISPLAY" ] && { [ -n "$NIRI_SOCKET" ] || [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; } && command -v qs >/dev/null 2>&1; then
+    r=y
+    if [ -z "$yes" ]; then printf '\n    Start the shell now? [Y/n] '; read -r r </dev/tty || r=y; fi
+    case "$r" in
+        n|N) ;;
+        *) pkill -x quickshell 2>/dev/null || true; sleep 0.5
+           setsid qs >/dev/null 2>&1 &
+           say "shell started" ;;
+    esac
+fi
+
 printf '\n\033[1mDone.\033[0m Now reload:\n'
 [ -n "$want_niri" ] && say "niri:     niri msg action load-config-file"
 [ -n "$want_hypr" ] && say "Hyprland: hyprctl reload"
-say "shell:    qs kill; qs"
+say "shell:    qs kill; qs   (if it is not already running)"
