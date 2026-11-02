@@ -6,6 +6,28 @@ import qs.services
 import qs.theme
 
 Scope {
+    // Only one menu in the pill at a time: the theme selector closes the others, and they close it
+    Connections {
+        target: Appearance
+        function onPickerOpenChanged() {
+            if (Appearance.pickerOpen) {
+                UiState.launcherOpen = false
+                UiState.powerOpen = false
+                UiState.wallpaperOpen = false
+                UiState.captureOpen = false
+                UiState.recMenuOpen = false
+            }
+        }
+    }
+    Connections {
+        target: UiState
+        function onLauncherOpenChanged() { if (UiState.launcherOpen) Appearance.pickerOpen = false }
+        function onPowerOpenChanged() { if (UiState.powerOpen) Appearance.pickerOpen = false }
+        function onWallpaperOpenChanged() { if (UiState.wallpaperOpen) Appearance.pickerOpen = false }
+        function onCaptureOpenChanged() { if (UiState.captureOpen) Appearance.pickerOpen = false }
+        function onRecMenuOpenChanged() { if (UiState.recMenuOpen) Appearance.pickerOpen = false }
+    }
+
     // qs ipc call power toggle
     IpcHandler {
         target: "power"
@@ -114,8 +136,8 @@ Scope {
     IpcHandler {
         target: "theme"
 
-        function toggle(): void { Appearance.togglePicker() }
-        function open(): void { Appearance.pickerOpen = true }
+        function toggle(): void { if (Appearance.pickerOpen) Appearance.pickerOpen = false; else Appearance.open(Compositor.focusedMonitor) }
+        function open(): void { Appearance.open(Compositor.focusedMonitor) }
         function close(): void { Appearance.pickerOpen = false }
         function set(name: string): void { Appearance.setTheme(name) }
         function mode(m: string): void { Appearance.setMode(m) }

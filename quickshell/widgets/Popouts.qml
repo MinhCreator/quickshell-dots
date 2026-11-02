@@ -24,8 +24,8 @@ Item {
     readonly property bool expanded: current !== ""
     readonly property bool needsKeyboard: expanded && current === "wifi" && wifiPage.needsKeyboard
     // Only launcher and power menu take the keyboard: the others open on hover and must not steal it
-    readonly property bool wantsKeyboard: current === "launcher" || current === "power" || current === "capture" || current === "naming"
-    readonly property bool busy: needsKeyboard || current === "power" || current === "capture" || current === "naming"
+    readonly property bool wantsKeyboard: current === "launcher" || current === "power" || current === "capture" || current === "naming" || current === "theme"
+    readonly property bool busy: needsKeyboard || current === "power" || current === "theme" || current === "capture" || current === "naming"
                                  || (current === "launcher" && launcherPanel.query !== "")
                                  || soundPage.dragging || displayPage.dragging || toolsPage.dragging
                                  || monitorsPage.dragging || quickPanel.dragging || calendarPanel.dragging
@@ -48,6 +48,7 @@ Item {
         "monitors":  [360, 406],
         "launcher":  [480, 380],
         "power":     [470, 190],
+        "theme":     [700, 232],
         "capture":   [470, 196],
         "record":    [360, Math.max(200, Math.round(recordPanel.implicitHeight))],
         "naming":    [380, Math.round(namingPanel.implicitHeight)]
@@ -68,14 +69,14 @@ Item {
 
     // Click: opens the panel; a second click on the power button closes the menu
     function activate(name, cy) {
-        if (current === name && name === "power") close()
+        if (current === name && (name === "power" || name === "theme")) close()
         else open(name, cy)
     }
 
     function hoverOpen(name, cy) {
         if (current === name) { closeTimer.stop(); return }
         // Someone typing in the launcher, or choosing in the power menu, is not interrupted by hovering the bar
-        if (current === "power" || current === "capture" || current === "naming" || (current === "launcher" && busy)) return
+        if (current === "power" || current === "theme" || current === "capture" || current === "naming" || (current === "launcher" && busy)) return
         if (current !== "") { open(name, cy); return }
         pendingName = name
         pendingY = cy
@@ -125,6 +126,14 @@ Item {
 
         if (current === "naming") resetTimer.start()
 
+        if (current === "theme") {
+            Appearance.pickerScreen = screenName
+            Appearance.pickerOpen = true
+            resetTimer.start()
+        } else if (Appearance.pickerOpen && mine(Appearance.pickerScreen)) {
+            Appearance.pickerOpen = false
+        }
+
         if (current === "launcher") {
             UiState.launcherScreen = screenName
             UiState.powerOpen = false
@@ -148,6 +157,7 @@ Item {
         onTriggered: {
             if (root.current === "launcher") launcherPanel.reset()
             else if (root.current === "power") powerPanel.reset()
+            else if (root.current === "theme") themePanel.reset()
             else if (root.current === "capture") capturePanel.reset()
             else if (root.current === "naming") namingPanel.reset()
         }
@@ -161,6 +171,19 @@ Item {
             if (Capture.naming) {
                 if (root.mine(Capture.pendingScreen)) root.open("naming", root.stageH / 2)
             } else if (root.current === "naming") {
+                root.close()
+            }
+        }
+    }
+
+    Connections {
+        target: Appearance
+
+        function onPickerOpenChanged() {
+            if (Appearance.pickerOpen) {
+                if (root.mine(Appearance.pickerScreen) && root.current !== "theme")
+                    root.open("theme", root.stageH / 2)
+            } else if (root.current === "theme") {
                 root.close()
             }
         }
@@ -394,6 +417,14 @@ Item {
                 id: powerPanel
                 width: 470; height: 190
                 opacity: root.current === "power" ? 1 : 0
+                visible: opacity > 0
+                Behavior on opacity { NumberAnimation { duration: 160 } }
+            }
+
+            ThemeView {
+                id: themePanel
+                width: 700; height: 232
+                opacity: root.current === "theme" ? 1 : 0
                 visible: opacity > 0
                 Behavior on opacity { NumberAnimation { duration: 160 } }
             }

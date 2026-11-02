@@ -72,7 +72,7 @@ The inspiration comes from [SaneAspect](https://www.youtube.com/@saneAspect): I 
 - Screenshots and screen recording (with a name prompt and audio choice), media player with a live audio spectrum.
 - Volume / brightness OSD, clipboard history.
 - **Light / Dark mode** (`Mod+Alt+T`): regenerates the pywal palette with `wal -l`, so the shell, kitty and Firefox all go light or dark together.
-- **10 themes per mode** (`Alt+T` opens the picker): they don't touch pywal, they only change how the shell uses its colors (accent, background, borders, text). Classic, Vivid, Complement, Triad, Analog, Mono, Tinted, Sober, Contrast, Neon. Cheap: no heavy effects.
+- **10 themes per mode** (`Alt+T` opens the picker from the pill): they don't touch pywal, they only change how the shell uses its colors (accent, background, borders, text). Classic, Vivid, Complement, Triad, Analog, Mono, Tinted, Sober, Contrast, Neon. Cheap: no heavy effects.
 
 
 ## Install
@@ -121,7 +121,7 @@ Put your images in `<Pictures>/Wallpapers` (for example `~/Pictures/Wallpapers` 
 | `Alt+D` | Do Not Disturb |
 | `Mod+Space` | next keyboard layout |
 | `Alt+S` | style picker |
-| `Alt+T` | theme picker (arrows preview live, `Tab` light/dark) |
+| `Alt+T` | theme picker (type to search, arrows preview, `Enter` applies, `Tab` light/dark) |
 | `Mod+Alt+T` | toggle light / dark |
 | `Mod+Alt+1..4` | Island / Classic / Dashboard / Vertical |
 | `Print` | screenshot and recording menu |

@@ -16,7 +16,8 @@ Singleton {
 
     property string mode: "dark"
     property string theme: "classic"
-    property bool pickerOpen: false
+    property bool pickerOpen: false      // the selector inside the pill / side panel
+    property string pickerScreen: ""    // monitor where it opens ("" = all)
     property bool applying: false
 
     readonly property var themes: [
@@ -59,6 +60,11 @@ Singleton {
         applyProc.command = ["sh", Quickshell.shellPath("scripts/apply-mode.sh"), m]
         applyProc.running = true
         return true
+    }
+
+    function open(screenName) {
+        pickerScreen = screenName
+        pickerOpen = true
     }
 
     function togglePicker() { pickerOpen = !pickerOpen }

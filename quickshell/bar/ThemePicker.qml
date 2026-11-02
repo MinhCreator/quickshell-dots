@@ -7,7 +7,7 @@ import qs.widgets
 
 // Floating panel at the center of the screen to choose light/dark and the color theme.
 // Opens with:  qs ipc call theme toggle
-// Arrows move (the theme is applied right away), Tab changes light/dark, 1-9 and 0 pick, Enter/Esc close.
+// Type to search, arrows browse (previewed live), Tab changes light/dark, Enter applies, Esc cancels.
 Scope {
     id: root
 
@@ -41,11 +41,19 @@ Scope {
             WlrLayershell.namespace: "shell-theme"
             WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
 
-            readonly property int cols: 5
             property int sel: 0
             property real shown: 0
+            property string query: ""
+            property string original: Appearance.theme
+
+            readonly property var list: {
+                const q = query.toLowerCase()
+                if (q === "") return Appearance.themes
+                return Appearance.themes.filter(t => t.name.toLowerCase().indexOf(q) >= 0 || t.id.indexOf(q) >= 0 || t.hint.toLowerCase().indexOf(q) >= 0)
+            }
 
             Component.onCompleted: {
+                original = Appearance.theme
                 for (let i = 0; i < Appearance.themes.length; i++)
                     if (Appearance.themes[i].id === Appearance.theme) sel = i
                 intro.start()
@@ -63,15 +71,21 @@ Scope {
             }
 
             function go(i) {
-                const n = Appearance.themes.length
+                const n = list.length
+                if (n === 0) return
                 sel = ((i % n) + n) % n
-                Appearance.setTheme(Appearance.themes[sel].id)
+                Appearance.setTheme(list[sel].id)
+            }
+
+            function close(keep) {
+                if (!keep) Appearance.setTheme(original)
+                Appearance.pickerOpen = false
             }
 
             // outside the panel: click to close
             MouseArea {
                 anchors.fill: parent
-                onClicked: Appearance.pickerOpen = false
+                onClicked: win.close(true)
             }
 
             Item {
@@ -80,14 +94,16 @@ Scope {
                 focus: true
 
                 Keys.onPressed: event => {
-                    if (event.key === Qt.Key_Escape || event.key === Qt.Key_Return || event.key === Qt.Key_Enter) Appearance.pickerOpen = false
-                    else if (event.key === Qt.Key_Left) win.go(win.sel - 1)
-                    else if (event.key === Qt.Key_Right) win.go(win.sel + 1)
-                    else if (event.key === Qt.Key_Up) win.go(win.sel - win.cols)
-                    else if (event.key === Qt.Key_Down) win.go(win.sel + win.cols)
-                    else if (event.key === Qt.Key_Tab || event.key === Qt.Key_M) Appearance.setMode("toggle")
-                    else if (event.key >= Qt.Key_1 && event.key <= Qt.Key_9) win.go(event.key - Qt.Key_1)
-                    else if (event.key === Qt.Key_0) win.go(9)
+                    if (event.key === Qt.Key_Escape) {
+                        if (win.query !== "") { win.query = ""; win.sel = 0 }
+                        else win.close(false)
+                    }
+                    else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) win.close(true)
+                    else if (event.key === Qt.Key_Left || event.key === Qt.Key_Up) win.go(win.sel - 1)
+                    else if (event.key === Qt.Key_Right || event.key === Qt.Key_Down) win.go(win.sel + 1)
+                    else if (event.key === Qt.Key_Tab) Appearance.setMode("toggle")
+                    else if (event.key === Qt.Key_Backspace) { win.query = win.query.slice(0, -1); win.sel = 0 }
+                    else if (event.text.length === 1 && event.text >= " " && !(event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier))) { win.query += event.text; win.sel = 0 }
                     else return
                     event.accepted = true
                 }
@@ -95,7 +111,9 @@ Scope {
 
             ThemeCard {
                 anchors.centerIn: parent
+                items: win.list
                 sel: win.sel
+                query: win.query
                 shown: win.shown
                 onPicked: i => win.go(i)
                 onModeClicked: m => Appearance.setMode(m)

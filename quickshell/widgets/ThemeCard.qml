@@ -1,13 +1,15 @@
 import QtQuick
 import qs.theme
 
-// The panel of the theme selector (also used alone to draw previews).
+// The theme selector panel: Dark|Light on top, search box, carousel of themes, hints.
+// Also used alone to draw previews.
 Item {
     id: root
 
+    property var items: Appearance.themes   // already filtered by the picker
     property int sel: 0
+    property string query: ""
     property real shown: 1
-    readonly property int cols: 5
 
     signal picked(int index)
     signal modeClicked(string mode)
@@ -18,32 +20,24 @@ Item {
     Rectangle {
         id: card
 
-        width: root.cols * 150 + (root.cols - 1) * 12 + 40
-        height: 64 + 2 * 124 + 12 + 28
-        radius: 30
+        width: 780
+        height: 232
+        radius: 28
         color: Qt.rgba(Theme.island.r, Theme.island.g, Theme.island.b, 0.97)
         border.width: 1
         border.color: Theme.border
         opacity: root.shown
         scale: 0.94 + 0.06 * root.shown
+        clip: true
 
         MouseArea { anchors.fill: parent }   // clicks inside do not close
 
-        Text {
-            x: 24; y: 22
-            text: "Theme"
-            color: Theme.foreground
-            font.family: Theme.fontFamily
-            font.pixelSize: 14
-            font.bold: true
-        }
-
-        // ---- Dark | Light ----
+        // ---- Dark | Light (above everything) ----
         Rectangle {
             id: seg
             anchors.horizontalCenter: parent.horizontalCenter
             y: 14
-            width: 180; height: 32
+            width: 190; height: 32
             radius: 16
             color: Theme.surfaceSoft
             border.width: 1
@@ -83,102 +77,172 @@ Item {
         }
 
         Text {
-            anchors.right: parent.right
-            anchors.rightMargin: 24
-            y: 24
-            text: Appearance.applying ? "Repainting…" : "← ↑ ↓ →  ·  Tab light/dark  ·  Esc"
+            anchors.left: parent.left
+            anchors.leftMargin: 24
+            y: 22
+            visible: Appearance.applying
+            text: "Repainting…"
             color: Theme.muted
             font.family: Theme.fontFamily
             font.pixelSize: 11
         }
 
-        // ---- The themes ----
-        Grid {
-            x: 20; y: 64
-            columns: root.cols
-            spacing: 12
+        // ---- Search ----
+        Item {
+            id: search
+            x: 24; y: 58
+            width: parent.width - 48; height: 30
 
-            Repeater {
-                model: Appearance.themes
-
-                delegate: Rectangle {
-                    id: opt
-
-                    required property var modelData
-                    required property int index
-
-                    readonly property var pv: Theme.preview(modelData.id)
-                    readonly property bool chosen: root.sel === index
-                    readonly property bool current: Appearance.theme === modelData.id
-
-                    width: 150
-                    height: 124
-                    radius: 18
-                    color: optMouse.containsMouse ? Theme.islandHover : Theme.surfaceSoft
-                    border.width: chosen ? 2 : 1
-                    border.color: chosen ? Theme.accent : Theme.border
-                    Behavior on color { ColorAnimation { duration: 120 } }
-
-                    // mini desktop painted with the colors of this theme
-                    Rectangle {
-                        x: 8; y: 8
-                        width: parent.width - 16; height: 66
-                        radius: 11
-                        color: opt.pv.background
-                        clip: true
-
-                        Rectangle {   // pill
-                            x: (parent.width - 62) / 2; y: 7
-                            width: 62; height: 13; radius: 6.5
-                            color: opt.pv.island
-                            border.width: 1
-                            border.color: opt.pv.border
-                            Rectangle { x: 6; y: 4; width: 5; height: 5; radius: 2.5; color: opt.pv.foreground }
-                            Rectangle { x: 15; y: 4.5; width: 18; height: 4; radius: 2; color: opt.pv.accent }
-                            Rectangle { x: parent.width - 12; y: 4; width: 5; height: 5; radius: 2.5; color: opt.pv.note }
-                        }
-                        Rectangle {   // card
-                            x: 10; y: 27
-                            width: parent.width - 20; height: 32; radius: 8
-                            color: opt.pv.island
-                            border.width: 1
-                            border.color: opt.pv.border
-                            Rectangle { x: 8; y: 7; width: 40; height: 5; radius: 2.5; color: opt.pv.foreground }
-                            Rectangle { x: 8; y: 16; width: 26; height: 4; radius: 2; color: opt.pv.muted }
-                            Rectangle { x: 8; y: 24; width: 34; height: 4; radius: 2; color: opt.pv.accent }
-                            Rectangle { x: parent.width - 22; y: 8; width: 12; height: 12; radius: 6; color: opt.pv.surfaceSoft }
-                            Rectangle { x: parent.width - 20; y: 10; width: 8; height: 8; radius: 4; color: opt.pv.danger }
-                        }
-                    }
-
-                    Text {
-                        x: 12; y: 80
-                        text: opt.modelData.name
-                        color: Theme.foreground
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 12
-                        font.bold: true
-                    }
-                    Text {
-                        x: 12; y: 98
-                        width: parent.width - 24
-                        text: opt.current ? "In use" : opt.modelData.hint
-                        elide: Text.ElideRight
-                        color: opt.current ? Theme.accent : Theme.muted
-                        font.family: Theme.fontFamily
-                        font.pixelSize: 10
-                    }
-
-                    MouseArea {
-                        id: optMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: root.picked(opt.index)
-                    }
+            Rectangle {   // magnifier
+                x: 2; y: 6
+                width: 13; height: 13; radius: 6.5
+                color: "transparent"
+                border.width: 1.6
+                border.color: Theme.muted
+            }
+            Rectangle {
+                x: 13; y: 17
+                width: 6; height: 1.8; radius: 1
+                rotation: 45
+                color: Theme.muted
+            }
+            Text {
+                x: 30
+                anchors.verticalCenter: parent.verticalCenter
+                text: root.query.length > 0 ? root.query : "Search themes..."
+                color: root.query.length > 0 ? Theme.foreground : Theme.muted
+                font.family: Theme.fontFamily
+                font.pixelSize: 15
+            }
+            Rectangle {   // caret
+                x: 30 + (root.query.length > 0 ? queryWidth.width : 0) + 1
+                anchors.verticalCenter: parent.verticalCenter
+                width: 1.5; height: 18
+                color: Theme.accent
+                SequentialAnimation on opacity {
+                    loops: Animation.Infinite
+                    NumberAnimation { to: 0; duration: 500 }
+                    NumberAnimation { to: 1; duration: 500 }
                 }
             }
+            Text {
+                id: queryWidth
+                visible: false
+                text: root.query
+                font.family: Theme.fontFamily
+                font.pixelSize: 15
+            }
+            Text {
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+                text: (root.items.length === 0 ? 0 : root.sel + 1) + "/" + root.items.length
+                color: Theme.muted
+                font.family: Theme.fontFamily
+                font.pixelSize: 12
+            }
+        }
+
+        // ---- Carousel ----
+        Item {
+            id: strip
+            x: 0; y: 98
+            width: parent.width; height: 92
+            clip: true
+
+            Repeater {
+                model: root.items
+                delegate: Rectangle {
+                id: opt
+
+                required property var modelData
+                required property int index
+
+                readonly property var pv: Theme.preview(modelData.id)
+                readonly property bool chosen: root.sel === index
+                readonly property bool current: Appearance.theme === modelData.id
+
+                width: 190
+                height: 84
+                y: 4
+                x: (strip.width - width) / 2 + (index - root.sel) * (width + 14)
+                Behavior on x { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                radius: 16
+                color: optMouse.containsMouse ? Theme.islandHover : Theme.surfaceSoft
+                border.width: chosen ? 2 : 0
+                border.color: Theme.accent
+                opacity: chosen ? 1 : 0.62
+                Behavior on opacity { NumberAnimation { duration: 140 } }
+
+                Row {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    y: 20
+                    spacing: 7
+                    Repeater {
+                        model: [ opt.pv.accent, opt.pv.note, opt.pv.danger, opt.pv.foreground, opt.pv.muted, opt.pv.background ]
+                        delegate: Rectangle {
+                            required property var modelData
+                            width: 14; height: 14; radius: 7
+                            color: modelData
+                            border.width: 1
+                            border.color: Theme.border
+                        }
+                    }
+                }
+                Text {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    y: 52
+                    text: opt.modelData.name.toLowerCase()
+                    color: Theme.foreground
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: opt.chosen
+                }
+                Rectangle {   // dot: theme in use
+                    visible: opt.current
+                    x: parent.width - 16; y: 8
+                    width: 6; height: 6; radius: 3
+                    color: Theme.accent
+                }
+
+                MouseArea {
+                    id: optMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: root.picked(opt.index)
+                }
+            }
+            }
+        }
+
+        Text {
+            anchors.centerIn: strip
+            visible: root.items.length === 0
+            text: "No theme matches"
+            color: Theme.muted
+            font.family: Theme.fontFamily
+            font.pixelSize: 13
+        }
+
+        // ---- Footer ----
+        Text {
+            x: 24
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 12
+            text: "← →  browse   ·   Tab  light/dark   ·   Esc  cancel"
+            color: Theme.muted
+            font.family: Theme.fontFamily
+            font.pixelSize: 11
+        }
+        Text {
+            anchors.right: parent.right
+            anchors.rightMargin: 24
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: 12
+            text: "Enter to apply"
+            color: Theme.muted
+            font.family: Theme.fontFamily
+            font.pixelSize: 11
         }
     }
-
 }

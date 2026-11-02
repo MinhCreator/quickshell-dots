@@ -29,6 +29,7 @@ Rectangle {
 
     readonly property bool authActive:       Auth.active && onThisScreen(Auth.screen)
     readonly property bool powerActive:      !attachedPanels && UiState.powerOpen && onThisScreen(UiState.powerScreen)
+    readonly property bool themeActive:      !attachedPanels && Appearance.pickerOpen && onThisScreen(Appearance.pickerScreen)
     readonly property bool captureActive:    !attachedPanels && UiState.captureOpen && onThisScreen(UiState.captureScreen)
     readonly property bool launcherActive:   !attachedPanels && UiState.launcherOpen && onThisScreen(UiState.launcherScreen)
     readonly property bool workspacesActive: Workspaces.shown && onThisScreen(Workspaces.screen) && Style.current !== "classic" && Style.current !== "dash"
@@ -44,6 +45,7 @@ Rectangle {
     readonly property string mode: {
         if (authActive) return "auth"
         if (powerActive) return "power"
+        if (themeActive) return "theme"
         if (captureActive) return "capture"
         if (namingActive) return "naming"
         if (launcherActive) return "launcher"
@@ -56,7 +58,7 @@ Rectangle {
     }
 
     // The bar uses this to grant exclusive keyboard focus
-    readonly property bool wantsKeyboard: mode === "auth" || mode === "power" || mode === "launcher"
+    readonly property bool wantsKeyboard: mode === "auth" || mode === "power" || mode === "launcher" || mode === "theme"
                                           || mode === "capture" || mode === "day" || mode === "naming"
 
     readonly property string monthTitle: {
@@ -73,6 +75,8 @@ Rectangle {
     readonly property int authH: 270
     readonly property int powerW: 470
     readonly property int powerH: 190
+    readonly property int themeW: 700
+    readonly property int themeH: 232
     readonly property int captureW: 470
     readonly property int captureH: 196
     readonly property int recW: 360
@@ -91,6 +95,7 @@ Rectangle {
         switch (mode) {
         case "auth":       return [authW, authH]
         case "power":      return [powerW, powerH]
+        case "theme":      return [themeW, themeH]
         case "capture":    return [captureW, captureH]
         case "naming":     return [nameW, nameH]
         case "record":     return [recW, recH]
@@ -148,12 +153,13 @@ Rectangle {
         if (mode === "launcher") launcherView.reset()
         else if (mode === "auth") authView.reset()
         else if (mode === "power") powerView.reset()
+        else if (mode === "theme") themeView.reset()
         else if (mode === "capture") captureView.reset()
         else if (mode === "naming") nameView.reset()
         else if (mode === "day") dayView.reset()
 
         // The recording menu must not reappear after another view
-        if (mode === "auth" || mode === "power" || mode === "capture"
+        if (mode === "auth" || mode === "power" || mode === "capture" || mode === "theme"
                 || mode === "naming" || mode === "launcher")
             UiState.recMenuOpen = false
     }
@@ -408,6 +414,17 @@ Rectangle {
         opacity: root.mode === "power" ? 1 : 0
         visible: root.mode === "power" || opacity > 0
         Behavior on opacity { NumberAnimation { duration: root.mode === "power" ? 240 : 80 } }
+    }
+
+    // ---------- Theme selector ----------
+    ThemeView {
+        id: themeView
+
+        width: root.themeW
+        height: root.themeH
+        opacity: root.mode === "theme" ? 1 : 0
+        visible: root.mode === "theme" || opacity > 0
+        Behavior on opacity { NumberAnimation { duration: root.mode === "theme" ? 240 : 80 } }
     }
 
     // ---------- Autenticazione ----------

@@ -72,7 +72,7 @@ L'ispirazione viene da [SaneAspect](https://www.youtube.com/@saneAspect): sono p
 - Screenshot e registrazione schermo (con richiesta del nome e scelta dell'audio), player multimediale con spettro audio in tempo reale.
 - OSD volume / luminosità, cronologia appunti.
 - **Modalità chiaro / scuro** (`Mod+Alt+T`): rigenera la palette pywal con `wal -l`, così shell, kitty e Firefox diventano chiari o scuri insieme.
-- **10 temi per modalità** (`Alt+T` apre il selettore): non toccano pywal, cambiano solo come la shell usa i suoi colori (accento, sfondo, bordi, testo). Classic, Vivid, Complement, Triad, Analog, Mono, Tinted, Sober, Contrast, Neon. Leggeri: nessun effetto pesante.
+- **10 temi per modalità** (`Alt+T` apre il selettore dalla pillola): non toccano pywal, cambiano solo come la shell usa i suoi colori (accento, sfondo, bordi, testo). Classic, Vivid, Complement, Triad, Analog, Mono, Tinted, Sober, Contrast, Neon. Leggeri: nessun effetto pesante.
 
 
 ## Installazione
@@ -121,7 +121,7 @@ Metti le immagini in `<Immagini>/Wallpapers` (ad esempio `~/Immagini/Wallpapers`
 | `Alt+D` | Non disturbare |
 | `Mod+Space` | layout tastiera successivo |
 | `Alt+S` | selettore degli stili |
-| `Alt+T` | selettore temi (le frecce mostrano l'anteprima, `Tab` chiaro/scuro) |
+| `Alt+T` | selettore temi (scrivi per cercare, frecce = anteprima, `Invio` applica, `Tab` chiaro/scuro) |
 | `Mod+Alt+T` | alterna chiaro / scuro |
 | `Mod+Alt+1..4` | Island / Classic / Dashboard / Vertical |
 | `Print` | menu screenshot e registrazione |
