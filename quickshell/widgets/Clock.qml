@@ -76,7 +76,7 @@ Rectangle {
     readonly property int powerW: 470
     readonly property int powerH: 190
     readonly property int themeW: 700
-    readonly property int themeH: 232
+    readonly property int themeH: 184
     readonly property int captureW: 470
     readonly property int captureH: 196
     readonly property int recW: 360

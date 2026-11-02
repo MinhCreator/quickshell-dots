@@ -48,7 +48,7 @@ Item {
         "monitors":  [360, 406],
         "launcher":  [480, 380],
         "power":     [470, 190],
-        "theme":     [700, 232],
+        "theme":     [700, 184],
         "capture":   [470, 196],
         "record":    [360, Math.max(200, Math.round(recordPanel.implicitHeight))],
         "naming":    [380, Math.round(namingPanel.implicitHeight)]
@@ -423,7 +423,7 @@ Item {
 
             ThemeView {
                 id: themePanel
-                width: 700; height: 232
+                width: 700; height: 184
                 opacity: root.current === "theme" ? 1 : 0
                 visible: opacity > 0
                 Behavior on opacity { NumberAnimation { duration: 160 } }

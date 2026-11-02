@@ -121,7 +121,7 @@ Put your images in `<Pictures>/Wallpapers` (for example `~/Pictures/Wallpapers` 
 | `Alt+D` | Do Not Disturb |
 | `Mod+Space` | next keyboard layout |
 | `Alt+S` | style picker |
-| `Alt+T` | theme picker (type to search, arrows preview, `Enter` applies, `Tab` light/dark) |
+| `Alt+T` | theme picker (arrows preview, `Enter` applies, `Esc` cancels, `Tab` light/dark) |
 | `Mod+Alt+T` | toggle light / dark |
 | `Mod+Alt+1..4` | Island / Classic / Dashboard / Vertical |
 | `Print` | screenshot and recording menu |

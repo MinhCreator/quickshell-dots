@@ -121,7 +121,7 @@ Metti le immagini in `<Immagini>/Wallpapers` (ad esempio `~/Immagini/Wallpapers`
 | `Alt+D` | Non disturbare |
 | `Mod+Space` | layout tastiera successivo |
 | `Alt+S` | selettore degli stili |
-| `Alt+T` | selettore temi (scrivi per cercare, frecce = anteprima, `Invio` applica, `Tab` chiaro/scuro) |
+| `Alt+T` | selettore temi (frecce = anteprima, `Invio` applica, `Esc` annulla, `Tab` chiaro/scuro) |
 | `Mod+Alt+T` | alterna chiaro / scuro |
 | `Mod+Alt+1..4` | Island / Classic / Dashboard / Vertical |
 | `Print` | menu screenshot e registrazione |
