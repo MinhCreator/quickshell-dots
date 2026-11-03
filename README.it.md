@@ -98,7 +98,7 @@ Opzioni: `--yes` (non chiede niente), `--no-deps` (salta il controllo dei progra
 
 ### Servono
 
-`quickshell`, `awww` (o `swww`), `pywal`, `jq`, `grim`, `slurp`, `wf-recorder`, `ffmpeg`, `wireplumber`, `playerctl`, `brightnessctl`, `cava`, `cliphist`, `wl-mirror`, `imagemagick`, `libnotify`, `inotify-tools`, `xdg-user-dirs`, e in più, se vuoi, `pywalfox`.
+`quickshell`, `awww` (o `swww`), `pywal`, `jq`, `grim`, `slurp`, `wf-recorder`, `ffmpeg`, `wireplumber`, `playerctl`, `brightnessctl`, `cava`, `cliphist`, `wl-mirror`, `imagemagick`, `libnotify`, `inotify-tools`, `xdg-user-dirs`, e in più, se vuoi, `python-pywalfox` (AUR) per Firefox. L'installer lo registra (`pywalfox install`); poi installi una volta l'estensione da [addons.mozilla.org](https://addons.mozilla.org/firefox/addon/pywalfox/). Pywalfox legge i colori che pywal scrive in `~/.cache/wal/`.
 
 ### Wallpaper
 

@@ -57,7 +57,7 @@ have() {
 deps="qs:quickshell awww:awww wal:python-pywal jq:jq grim:grim slurp:slurp wf-recorder:wf-recorder
 ffmpeg:ffmpeg wpctl:wireplumber playerctl:playerctl brightnessctl:brightnessctl cava:cava
 cliphist:cliphist wl-mirror:wl-mirror magick:imagemagick notify-send:libnotify
-inotifywait:inotify-tools pywalfox:pywalfox xdg-user-dir:xdg-user-dirs"
+inotifywait:inotify-tools pywalfox:python-pywalfox xdg-user-dir:xdg-user-dirs"
 
 if [ -z "$nodeps" ]; then
     step "2/6" "Checking the programs the shell needs"
@@ -274,6 +274,19 @@ fi
 n=$(ls "$wp" 2>/dev/null | grep -ciE '\.(jpe?g|png|webp)$' || true)
 say "$n image(s) there. Put more in that folder: Alt+W opens the picker."
 
+
+# ── Firefox: Pywalfox reads the pywal colors (~/.cache/wal/colors) ──
+if [ -z "$nodeps" ]; then
+    printf '\n'
+    if command -v pywalfox >/dev/null 2>&1; then
+        say "Firefox: registering the Pywalfox native host (safe to repeat)"
+        pywalfox install >/dev/null 2>&1 && say "registered" || say "pywalfox install failed: run it by hand"
+    else
+        say "Firefox: Pywalfox is not installed (package python-pywalfox, then run: pywalfox install)"
+    fi
+    say "Firefox also needs the add-on, installed once from the browser:"
+    say "  https://addons.mozilla.org/firefox/addon/pywalfox/"
+fi
 
 # ── autostart ──
 ok_auto=1
