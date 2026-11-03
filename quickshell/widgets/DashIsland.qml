@@ -66,7 +66,8 @@ Rectangle {
     Component.onDestruction: SysStats.users--
     readonly property int peekW: 540
     readonly property bool attached: Style.dashAttached
-    readonly property int peekH: attached ? 56 : 124
+    readonly property bool peekMusic: attached && Media.active   // attached version: the song shows up in the bar of the mouse-over
+    readonly property int peekH: attached ? (peekMusic ? 88 : 56) : 124
     readonly property int dashW: 860
     readonly property int dashH: headerH + 308 + 14
     readonly property bool wide: page === "dash" || page === "tools" || page === "monitors"
@@ -699,26 +700,89 @@ Rectangle {
             }
         }
 
-        // center: clock and date
-        Row {
+        // center: clock and date, and the song below it (only while there is a player)
+        Column {
             anchors.centerIn: parent
-            spacing: 10
+            spacing: 7
 
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                text: root.two(clock.date.getHours()) + ":" + root.two(clock.date.getMinutes())
-                color: Theme.foreground
-                font.family: Theme.fontFamily
-                font.pixelSize: 22
-                font.bold: true
+            Row {
+                anchors.horizontalCenter: parent.horizontalCenter
+                spacing: 10
+
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: root.two(clock.date.getHours()) + ":" + root.two(clock.date.getMinutes())
+                    color: Theme.foreground
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 22
+                    font.bold: true
+                }
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: Qt.formatDateTime(clock.date, "ddd, MMM d")
+                    color: Theme.muted
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                }
             }
-            Text {
-                anchors.verticalCenter: parent.verticalCenter
-                text: Qt.formatDateTime(clock.date, "ddd, MMM d")
-                color: Theme.muted
-                font.family: Theme.fontFamily
-                font.pixelSize: 12
+
+            Item {
+                visible: root.peekMusic
+                anchors.horizontalCenter: parent.horizontalCenter
+                width: 250
+                height: 26
+
+                ClippingRectangle {
+                    id: peekCover
+                    x: 0
+                    anchors.verticalCenter: titleLine.verticalCenter
+                    width: 20; height: 20
+                    radius: 6
+                    color: Theme.surfaceSoft
+
+                    Image {
+                        anchors.fill: parent
+                        source: Media.artUrl
+                        asynchronous: true
+                        fillMode: Image.PreserveAspectCrop
+                        sourceSize: Qt.size(48, 48)
+                    }
+                }
+
+                Text {
+                    id: titleLine
+                    x: 28
+                    y: 0
+                    width: parent.width - 28
+                    elide: Text.ElideRight
+                    text: Media.title + (Media.artist !== "" ? "  ·  " + Media.artist : "")
+                    color: Theme.foreground
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                }
+
+                Rectangle {   // progress
+                    x: 28
+                    y: titleLine.height + 5
+                    width: parent.width - 28
+                    height: 3
+                    radius: 1.5
+                    color: Theme.mix(Theme.island, Theme.foreground, 0.18)
+
+                    Rectangle {
+                        width: Math.max(3, parent.width * Media.progress)
+                        height: parent.height
+                        radius: 1.5
+                        color: Theme.accent
+                    }
+                }
             }
+        }
+
+        // keeps the progress bar moving while the bar is open
+        FrameAnimation {
+            running: root.mode === "peek" && root.peekMusic && Media.playing
+            onTriggered: if (Media.player) Media.player.positionChanged()
         }
 
         // right: notifications, and wifi + battery below
