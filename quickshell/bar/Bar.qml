@@ -45,12 +45,14 @@ Scope {
                 bottom: win.sideStyle
             }
             margins {
-                top: win.sideStyle ? 0 : Theme.topMargin
+                top: (win.sideStyle || win.attachedDash) ? 0 : Theme.topMargin
             }
 
             // Style chosen from the picker (qs ipc call style toggle)
             readonly property bool classic: Style.current === "classic"
             readonly property bool dashStyle: Style.current === "dash"
+            // Dashboard "Attached" version: the bar is fused with the top edge of the screen
+            readonly property bool attachedDash: dashStyle && Style.dashAttached
             // The island that drives keyboard shortcuts (Alt+1/2/3, Esc)
             readonly property var ctl: win.sideStyle ? popouts : (win.dashStyle ? dash : control)
             // Islands of the Island / Classic styles
@@ -191,6 +193,18 @@ Scope {
                     y: 0
                 }
 
+                // Attached Dashboard: the menus (launcher, power, themes...) come out of the edge with the same shape
+                AttachedShape {
+                    visible: win.attachedDash && clock.visible
+                    z: -0.4
+                    x: clock.x - fillet
+                    y: clock.y
+                    bodyWidth: clock.width
+                    bodyHeight: clock.height
+                    corner: clock.corner
+                    edgeColor: clock.edgeColor
+                }
+
                 // Workspaces on the left, next to the launcher (classic bar only)
                 WorkspaceDots {
                     id: wsDots
@@ -198,6 +212,19 @@ Scope {
                     screenName: win.modelData.name
                     x: 14 + Theme.islandHeight + Theme.gap
                     y: 0
+                }
+
+                // Attached Dashboard: the shape (with the curves where it meets the edge) is drawn behind the island
+                AttachedShape {
+                    visible: win.attachedDash && dash.visible
+                    z: -0.4
+                    x: dash.x - fillet
+                    y: dash.y
+                    bodyWidth: dash.width
+                    bodyHeight: dash.height
+                    corner: dash.corner
+                    edgeColor: dash.edgeColor
+                    edgeWidth: dash.edgeWidth
                 }
 
                 DashIsland {

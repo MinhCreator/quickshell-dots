@@ -126,7 +126,7 @@ Item {
 
         if (current === "naming") resetTimer.start()
 
-        if (current === "theme") {
+        if (current === "theme" && root.visible) {
             Appearance.pickerScreen = screenName
             Appearance.pickerOpen = true
             resetTimer.start()
@@ -180,6 +180,8 @@ Item {
         target: Appearance
 
         function onPickerOpenChanged() {
+            // in the other styles the pill shows the selector: this panel must stay closed
+            if (!root.visible) return
             if (Appearance.pickerOpen) {
                 if (root.mine(Appearance.pickerScreen) && root.current !== "theme")
                     root.open("theme", root.stageH / 2)

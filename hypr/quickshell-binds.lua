@@ -76,6 +76,7 @@ function M.apply()
     -- ── Shell: stili ──
     bind("ALT + S",                qs("style toggle"))
     bind("ALT + T",                qs("theme toggle"))
+    bind("ALT + V",                qs("style variant"))
     bind(mod .. " + ALT + T",      qs("theme mode toggle"))
     bind(mod .. " + ALT + 1",      qs("style set island"))
     bind(mod .. " + ALT + 2",      qs("style set classic"))

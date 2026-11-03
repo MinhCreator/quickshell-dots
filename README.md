@@ -65,7 +65,7 @@ The inspiration comes from [SaneAspect](https://www.youtube.com/@saneAspect): I 
 ## What you get
 
 - **4 styles you can switch live** (`Alt+S` opens the picker, or `Mod+Alt+1..4`):
-  **Island** (floating pills that expand), **Classic** (full-width bar), **Dashboard** (one pill that grows into pages) and **Vertical** (a side bar with panels attached to it).
+  **Island** (floating pills that expand), **Classic** (full-width bar), **Dashboard** (one pill that grows into pages; with `Alt+V` you can pick the *Attached* version, a bar fused with the top edge) and **Vertical** (a side bar with panels attached to it).
 - Launcher with favorites, power menu, lock screen, notification center with Do Not Disturb, calendar with reminders, timer and stopwatch.
 - Quick settings: Wi-Fi, Bluetooth, sound, display, monitors (position, scale, rotation), keyboard layouts, Game Mode and Eco Mode.
 - Wallpaper picker; the colors of the whole shell (and Firefox, with Pywalfox) follow the wallpaper through pywal.
@@ -122,6 +122,7 @@ Put your images in `<Pictures>/Wallpapers` (for example `~/Pictures/Wallpapers` 
 | `Mod+Space` | next keyboard layout |
 | `Alt+S` | style picker |
 | `Alt+T` | theme picker (arrows preview, `Enter` applies, `Esc` cancels, `Tab` light/dark) |
+| `Alt+V` | Dashboard version (Pill / Attached) |
 | `Mod+Alt+T` | toggle light / dark |
 | `Mod+Alt+1..4` | Island / Classic / Dashboard / Vertical |
 | `Print` | screenshot and recording menu |

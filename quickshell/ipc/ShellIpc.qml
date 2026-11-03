@@ -16,16 +16,30 @@ Scope {
                 UiState.wallpaperOpen = false
                 UiState.captureOpen = false
                 UiState.recMenuOpen = false
+                Style.variantOpen = false
+            }
+        }
+    }
+    Connections {
+        target: Style
+        function onVariantOpenChanged() {
+            if (Style.variantOpen) {
+                Appearance.pickerOpen = false
+                UiState.launcherOpen = false
+                UiState.powerOpen = false
+                UiState.wallpaperOpen = false
+                UiState.captureOpen = false
+                UiState.recMenuOpen = false
             }
         }
     }
     Connections {
         target: UiState
-        function onLauncherOpenChanged() { if (UiState.launcherOpen) Appearance.pickerOpen = false }
-        function onPowerOpenChanged() { if (UiState.powerOpen) Appearance.pickerOpen = false }
-        function onWallpaperOpenChanged() { if (UiState.wallpaperOpen) Appearance.pickerOpen = false }
-        function onCaptureOpenChanged() { if (UiState.captureOpen) Appearance.pickerOpen = false }
-        function onRecMenuOpenChanged() { if (UiState.recMenuOpen) Appearance.pickerOpen = false }
+        function onLauncherOpenChanged() { if (UiState.launcherOpen) { Appearance.pickerOpen = false; Style.variantOpen = false } }
+        function onPowerOpenChanged() { if (UiState.powerOpen) { Appearance.pickerOpen = false; Style.variantOpen = false } }
+        function onWallpaperOpenChanged() { if (UiState.wallpaperOpen) { Appearance.pickerOpen = false; Style.variantOpen = false } }
+        function onCaptureOpenChanged() { if (UiState.captureOpen) { Appearance.pickerOpen = false; Style.variantOpen = false } }
+        function onRecMenuOpenChanged() { if (UiState.recMenuOpen) { Appearance.pickerOpen = false; Style.variantOpen = false } }
     }
 
     // qs ipc call power toggle
@@ -127,6 +141,13 @@ Scope {
         function open(): void { Style.pickerOpen = true }
         function close(): void { Style.pickerOpen = false }
         function set(name: string): void { Style.set(name) }
+        // qs ipc call style variant                 (opens / closes the Dashboard version selector)
+        // qs ipc call style setvariant attached     (or: pill)
+        function variant(): void {
+            if (Style.variantOpen) Style.variantOpen = false
+            else Style.openVariants(Compositor.focusedMonitor)
+        }
+        function setvariant(name: string): void { Style.setDashVariant(name) }
     }
 
     // qs ipc call audio dump   (writes the PipeWire nodes the shell sees to the log)

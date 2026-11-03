@@ -30,6 +30,7 @@ Rectangle {
     readonly property bool authActive:       Auth.active && onThisScreen(Auth.screen)
     readonly property bool powerActive:      !attachedPanels && UiState.powerOpen && onThisScreen(UiState.powerScreen)
     readonly property bool themeActive:      !attachedPanels && Appearance.pickerOpen && onThisScreen(Appearance.pickerScreen)
+    readonly property bool variantActive:    !attachedPanels && Style.variantOpen && onThisScreen(Style.variantScreen)
     readonly property bool captureActive:    !attachedPanels && UiState.captureOpen && onThisScreen(UiState.captureScreen)
     readonly property bool launcherActive:   !attachedPanels && UiState.launcherOpen && onThisScreen(UiState.launcherScreen)
     readonly property bool workspacesActive: Workspaces.shown && onThisScreen(Workspaces.screen) && Style.current !== "classic" && Style.current !== "dash"
@@ -46,6 +47,7 @@ Rectangle {
         if (authActive) return "auth"
         if (powerActive) return "power"
         if (themeActive) return "theme"
+        if (variantActive) return "variant"
         if (captureActive) return "capture"
         if (namingActive) return "naming"
         if (launcherActive) return "launcher"
@@ -58,7 +60,7 @@ Rectangle {
     }
 
     // The bar uses this to grant exclusive keyboard focus
-    readonly property bool wantsKeyboard: mode === "auth" || mode === "power" || mode === "launcher" || mode === "theme"
+    readonly property bool wantsKeyboard: mode === "auth" || mode === "power" || mode === "launcher" || mode === "theme" || mode === "variant"
                                           || mode === "capture" || mode === "day" || mode === "naming"
 
     readonly property string monthTitle: {
@@ -77,6 +79,8 @@ Rectangle {
     readonly property int powerH: 190
     readonly property int themeW: 700
     readonly property int themeH: 184
+    readonly property int variantW: 520
+    readonly property int variantH: 190
     readonly property int captureW: 470
     readonly property int captureH: 196
     readonly property int recW: 360
@@ -96,6 +100,7 @@ Rectangle {
         case "auth":       return [authW, authH]
         case "power":      return [powerW, powerH]
         case "theme":      return [themeW, themeH]
+        case "variant":    return [variantW, variantH]
         case "capture":    return [captureW, captureH]
         case "naming":     return [nameW, nameH]
         case "record":     return [recW, recH]
@@ -111,12 +116,18 @@ Rectangle {
 
     width: dims[0]
     height: dims[1]
-    radius: Math.min(24, height / 2)
-    color: Theme.island
-    border.width: 1
-    border.color: mode === "auth" ? Theme.accent
+    // Dashboard "Attached" version: the menus come out of the top edge with the same shape as the bar
+    // (the Bar draws it with AttachedShape, behind this item)
+    readonly property bool attachedLook: Style.dashAttached && Style.current === "dash"
+    readonly property color edgeColor: mode === "auth" ? Theme.accent
                   : ((mode === "toast" && Toast.current && Toast.current.tone === "danger") ? Theme.danger
                                                                                           : Theme.border)
+    readonly property real corner: Math.min(24, Math.max(18, height / 3))
+
+    radius: attachedLook ? corner : Math.min(24, height / 2)
+    color: attachedLook ? "transparent" : Theme.island
+    border.width: attachedLook ? 0 : 1
+    border.color: edgeColor
     clip: true
 
     Behavior on width  { NumberAnimation { duration: 280; easing.type: Easing.OutCubic } }
@@ -154,12 +165,13 @@ Rectangle {
         else if (mode === "auth") authView.reset()
         else if (mode === "power") powerView.reset()
         else if (mode === "theme") themeView.reset()
+        else if (mode === "variant") variantView.reset()
         else if (mode === "capture") captureView.reset()
         else if (mode === "naming") nameView.reset()
         else if (mode === "day") dayView.reset()
 
         // The recording menu must not reappear after another view
-        if (mode === "auth" || mode === "power" || mode === "capture" || mode === "theme"
+        if (mode === "auth" || mode === "power" || mode === "capture" || mode === "theme" || mode === "variant"
                 || mode === "naming" || mode === "launcher")
             UiState.recMenuOpen = false
     }
@@ -425,6 +437,17 @@ Rectangle {
         opacity: root.mode === "theme" ? 1 : 0
         visible: root.mode === "theme" || opacity > 0
         Behavior on opacity { NumberAnimation { duration: root.mode === "theme" ? 240 : 80 } }
+    }
+
+    // ---------- Dashboard version selector ----------
+    VariantView {
+        id: variantView
+
+        width: root.variantW
+        height: root.variantH
+        opacity: root.mode === "variant" ? 1 : 0
+        visible: root.mode === "variant" || opacity > 0
+        Behavior on opacity { NumberAnimation { duration: root.mode === "variant" ? 240 : 80 } }
     }
 
     // ---------- Autenticazione ----------

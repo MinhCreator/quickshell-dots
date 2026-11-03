@@ -65,7 +65,7 @@ L'ispirazione viene da [SaneAspect](https://www.youtube.com/@saneAspect): sono p
 ## Cosa trovi
 
 - **4 stili da cambiare al volo** (`Alt+S` apre il selettore, oppure `Mod+Alt+1..4`):
-  **Island** (pillole fluttuanti che si espandono), **Classic** (barra a tutta larghezza), **Dashboard** (una pillola che diventa pagine) e **Vertical** (barra laterale con pannelli attaccati).
+  **Island** (pillole fluttuanti che si espandono), **Classic** (barra a tutta larghezza), **Dashboard** (una pillola che diventa pagine; con `Alt+V` scegli la versione *Attaccata*, una barra fusa con il bordo alto) e **Vertical** (barra laterale con pannelli attaccati).
 - Launcher con preferiti, menu power, schermata di blocco, centro notifiche con Non disturbare, calendario con promemoria, timer e cronometro.
 - Impostazioni rapide: Wi-Fi, Bluetooth, audio, schermo, monitor (posizione, scala, rotazione), layout tastiera, Game Mode ed Eco Mode.
 - Selettore wallpaper; i colori di tutta la shell (e di Firefox, con Pywalfox) seguono lo sfondo tramite pywal.
@@ -122,6 +122,7 @@ Metti le immagini in `<Immagini>/Wallpapers` (ad esempio `~/Immagini/Wallpapers`
 | `Mod+Space` | layout tastiera successivo |
 | `Alt+S` | selettore degli stili |
 | `Alt+T` | selettore temi (frecce = anteprima, `Invio` applica, `Esc` annulla, `Tab` chiaro/scuro) |
+| `Alt+V` | versione della Dashboard (Pillola / Attaccata) |
 | `Mod+Alt+T` | alterna chiaro / scuro |
 | `Mod+Alt+1..4` | Island / Classic / Dashboard / Vertical |
 | `Print` | menu screenshot e registrazione |

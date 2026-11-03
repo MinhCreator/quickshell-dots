@@ -65,7 +65,8 @@ Rectangle {
     Component.onCompleted: SysStats.users++
     Component.onDestruction: SysStats.users--
     readonly property int peekW: 540
-    readonly property int peekH: 124
+    readonly property bool attached: Style.dashAttached
+    readonly property int peekH: attached ? 56 : 124
     readonly property int dashW: 860
     readonly property int dashH: headerH + 308 + 14
     readonly property bool wide: page === "dash" || page === "tools" || page === "monitors"
@@ -85,11 +86,16 @@ Rectangle {
 
     width: mode === "open" ? cardW : (mode === "peek" ? peekW : closedW)
     height: mode === "open" ? cardH : (mode === "peek" ? peekH : Theme.islandHeight)
-    radius: Math.min(26, height / 2)
-    color: Theme.island
-    border.width: flash ? 2 : 1
-    border.color: flash ? Theme.accent
+    // Colors of the edge (the "Attached" version draws it with AttachedShape, from the bar)
+    readonly property color edgeColor: flash ? Theme.accent
                   : (musicOn ? Theme.mix(Theme.border, Theme.accent, 0.5) : Theme.border)
+    readonly property real edgeWidth: flash ? 2 : 1
+    readonly property real corner: mode === "open" ? 26 : 18
+
+    radius: attached ? corner : Math.min(26, height / 2)
+    color: attached ? "transparent" : Theme.island
+    border.width: attached ? 0 : edgeWidth
+    border.color: edgeColor
     clip: true
 
     Behavior on border.color { ColorAnimation { duration: 260 } }
@@ -416,7 +422,7 @@ Rectangle {
         id: peekView
         width: root.peekW
         height: root.peekH
-        opacity: root.mode === "peek" ? 1 : 0
+        opacity: (root.mode === "peek" && !root.attached) ? 1 : 0
         visible: opacity > 0
         Behavior on opacity { NumberAnimation { duration: root.mode === "peek" ? 220 : 80 } }
 
@@ -643,6 +649,125 @@ Rectangle {
             }
         }
     }
+
+    // ---------- Peek: the attached bar, taller: Desktop · dots | clock + date | notifications · wifi + battery ----------
+    Item {
+        id: peekAttached
+        width: root.peekW
+        height: root.peekH
+        opacity: (root.mode === "peek" && root.attached) ? 1 : 0
+        visible: opacity > 0
+        Behavior on opacity { NumberAnimation { duration: root.mode === "peek" ? 220 : 80 } }
+
+        // left: workspace name, and the dots below it
+        Column {
+            x: 20
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 5
+
+            Row {
+                spacing: 7
+                Rectangle {
+                    anchors.verticalCenter: parent.verticalCenter
+                    width: 6; height: 6; radius: 3
+                    color: Theme.accent
+                }
+                Text {
+                    text: "Desktop " + root.activeId
+                    color: Theme.foreground
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                    font.bold: true
+                }
+            }
+
+            Row {
+                spacing: 4
+                Repeater {
+                    model: Math.min(root.dots.length, 6)
+                    delegate: Rectangle {
+                        required property int index
+                        readonly property bool active: root.dots[index].id === root.activeId
+                        width: active ? 18 : 7
+                        height: 7
+                        radius: 3.5
+                        color: active ? Theme.accent
+                               : (root.dots[index].occupied ? Theme.foreground : Theme.mix(Theme.island, Theme.foreground, 0.22))
+                        Behavior on width { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                    }
+                }
+            }
+        }
+
+        // center: clock and date
+        Row {
+            anchors.centerIn: parent
+            spacing: 10
+
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                text: root.two(clock.date.getHours()) + ":" + root.two(clock.date.getMinutes())
+                color: Theme.foreground
+                font.family: Theme.fontFamily
+                font.pixelSize: 22
+                font.bold: true
+            }
+            Text {
+                anchors.verticalCenter: parent.verticalCenter
+                text: Qt.formatDateTime(clock.date, "ddd, MMM d")
+                color: Theme.muted
+                font.family: Theme.fontFamily
+                font.pixelSize: 12
+            }
+        }
+
+        // right: notifications, and wifi + battery below
+        Column {
+            anchors.right: parent.right
+            anchors.rightMargin: 20
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 5
+
+            Row {
+                anchors.right: parent.right
+                spacing: 7
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: NotifCenter.count > 0 ? NotifCenter.count + " new" : "All caught up"
+                    color: NotifCenter.count > 0 ? Theme.accent : Theme.foreground
+                    font.family: Theme.fontFamily
+                    font.pixelSize: 12
+                }
+                Glyph {
+                    anchors.verticalCenter: parent.verticalCenter
+                    kind: "bell"
+                    size: 13
+                    color: NotifCenter.count > 0 ? Theme.accent : Theme.muted
+                }
+            }
+
+            Row {
+                anchors.right: parent.right
+                spacing: 8
+                Glyph {
+                    anchors.verticalCenter: parent.verticalCenter
+                    kind: "wifi"
+                    level: Network.level
+                    size: 13
+                    color: Network.wifiOn ? (Network.connected ? Theme.accent : Theme.foreground) : Theme.muted
+                }
+                BatteryIcon {
+                    visible: Battery.present
+                    anchors.verticalCenter: parent.verticalCenter
+                    percent: Battery.percent
+                    charging: Battery.charging
+                    outline: Battery.tone
+                    fillColor: Battery.tone
+                }
+            }
+        }
+    }
+
 
     // ---------- Open: dots to switch pages ----------
     Item {

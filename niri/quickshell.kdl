@@ -21,6 +21,7 @@ binds {
     // ── Styles ──
     Alt+S         { spawn "qs" "ipc" "call" "style" "toggle"; }
     Alt+T         { spawn "qs" "ipc" "call" "theme" "toggle"; }
+    Alt+V         { spawn "qs" "ipc" "call" "style" "variant"; }
     Mod+Alt+T     { spawn "qs" "ipc" "call" "theme" "mode" "toggle"; }
     Mod+Alt+1     { spawn "qs" "ipc" "call" "style" "set" "island"; }
     Mod+Alt+2     { spawn "qs" "ipc" "call" "style" "set" "classic"; }

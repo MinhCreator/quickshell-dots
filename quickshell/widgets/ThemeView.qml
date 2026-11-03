@@ -20,18 +20,40 @@ Item {
         sel = 0
         for (let i = 0; i < Appearance.themes.length; i++)
             if (Appearance.themes[i].id === Appearance.theme) sel = i
-        keys.forceActiveFocus()
+        focusTimer.restart()
+    }
+
+    // Focus only once the view is really visible: a hidden copy must never take the keys
+    Timer {
+        id: focusTimer
+        interval: 40
+        onTriggered: if (root.visible && Appearance.pickerOpen) keys.forceActiveFocus()
+    }
+    onVisibleChanged: if (visible) focusTimer.restart()
+
+    // The carousel moves right away; the whole shell repaints with the new theme only when the motion is over,
+    // otherwise the repaint makes the animation stutter
+    Timer {
+        id: applyTimer
+        interval: 230
+        onTriggered: root.applyNow()
+    }
+
+    function applyNow() {
+        applyTimer.stop()
+        if (items.length > 0) Appearance.setTheme(items[sel].id)
     }
 
     function go(i) {
         const n = items.length
         if (n === 0) return
         sel = ((i % n) + n) % n
-        Appearance.setTheme(items[sel].id)
+        applyTimer.restart()
     }
 
     function close(keep) {
-        if (!keep) Appearance.setTheme(original)
+        if (keep) applyNow()
+        else { applyTimer.stop(); Appearance.setTheme(original) }
         Appearance.pickerOpen = false
     }
 
@@ -148,8 +170,18 @@ Item {
                 color: optMouse.containsMouse ? Theme.islandHover : Theme.surfaceSoft
                 border.width: chosen ? 2 : 0
                 border.color: Theme.accent
-                opacity: chosen ? 1 : 0.62
-                Behavior on opacity { NumberAnimation { duration: 140 } }
+                // depth: the farther from the center, the smaller and fainter; the chosen one pops in with a small bounce
+                readonly property int dist: Math.abs(index - root.sel)
+                opacity: chosen ? 1 : Math.max(0.22, 0.7 - 0.2 * dist)
+                scale: chosen ? 1.0 : Math.max(0.74, 0.92 - 0.06 * dist)
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+                Behavior on scale {
+                    NumberAnimation {
+                        duration: opt.chosen ? 320 : 200
+                        easing.type: opt.chosen ? Easing.OutBack : Easing.OutCubic
+                        easing.overshoot: 2.2
+                    }
+                }
 
                 Row {
                     anchors.horizontalCenter: parent.horizontalCenter
@@ -158,11 +190,35 @@ Item {
                     Repeater {
                         model: [ opt.pv.accent, opt.pv.note, opt.pv.danger, opt.pv.foreground, opt.pv.muted, opt.pv.background ]
                         delegate: Rectangle {
+                            id: dot
                             required property var modelData
+                            required property int index
                             width: 14; height: 14; radius: 7
                             color: modelData
                             border.width: 1
                             border.color: Theme.border
+                            scale: 0.85
+
+                            // the dots light up one after the other when the card is chosen
+                            readonly property bool lit: opt.chosen
+                            onLitChanged: {
+                                if (lit) { scale = 0.2; pop.restart() }
+                                else { pop.stop(); scale = 0.85 }
+                            }
+                            SequentialAnimation {
+                                id: pop
+                                PauseAnimation { duration: dot.index * 45 }
+                                NumberAnimation {
+                                    target: dot
+                                    property: "scale"
+                                    to: 1.15
+                                    duration: 240
+                                    easing.type: Easing.OutBack
+                                    easing.overshoot: 3
+                                }
+                                NumberAnimation { target: dot; property: "scale"; to: 1; duration: 120 }
+                            }
+                            Component.onCompleted: if (lit) scale = 1
                         }
                     }
                 }
