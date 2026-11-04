@@ -1,117 +1,100 @@
 #!/bin/sh
-# Installer for the Quickshell shell (niri + Hyprland, same shortcuts, same styles).
-# Run  sh install.sh --help  for the options.
+# Installer of the Quickshell shell (niri + Hyprland, same shortcuts, same styles).
 #
-# Two ways to install:
-#   light  adds a few lines to YOUR niri / Hyprland config and skips the keys you
-#          already use. Nothing of yours is replaced. (default with --yes)
-#   full   installs our niri / Hyprland configs, the setup of the screenshots.
-#          Yours are backed up first and it asks before replacing.
+#   sh install.sh               asks which kind of install you want
+#   sh install.sh --light       LIGHT: adds a few lines to your niri / Hyprland config, replaces nothing
+#   sh install.sh --full        FULL: also installs the compositor config of the author (replaces yours, backup saved)
+#   sh install.sh --niri | --hyprland | --all     which compositor (default: the ones you have)
+#   sh install.sh --yes         do not ask anything (LIGHT unless --full; installs missing programs too)
+#   sh install.sh --no-deps     skip the check for missing programs
+#   sh install.sh --purge       also uninstall the packages of other shells (noctalia, caelestia, DMS)
+#   sh install.sh --uninstall   takes our lines out of your config and moves the shell to the backup
 #
-# Everything it touches is saved first in ~/.config/quickshell-backup-DATE
+# Everything it replaces is saved first in ~/.config/quickshell-backup-DATE.
+# The work is split in small files in installer/ (one per step).
 set -e
 here=$(cd "$(dirname "$0")" && pwd)
-lib="$here/installer"
+cfg="${XDG_CONFIG_HOME:-$HOME/.config}"
+bk="$cfg/quickshell-backup-$(date +%Y%m%d-%H%M%S)"
 
-. "$lib/common.sh"
-. "$lib/deps.sh"
-. "$lib/others.sh"
-. "$lib/light.sh"
-. "$lib/full.sh"
-. "$lib/uninstall.sh"
+want_niri=""; want_hypr=""; yes=""; nodeps=""; purge=""; mode=""; uninstall=""
+for a in "$@"; do
+    case "$a" in
+        --niri) want_niri=1 ;;
+        --hyprland|--hypr) want_hypr=1 ;;
+        --all) want_niri=1; want_hypr=1 ;;
+        --light) mode=light ;;
+        --full) mode=full ;;
+        --yes|-y) yes=1 ;;
+        --no-deps) nodeps=1 ;;
+        --purge) purge=1 ;;
+        --uninstall) uninstall=1 ;;
+        -h|--help) sed -n '2,14p' "$0"; exit 0 ;;
+        *) echo "unknown option: $a"; exit 1 ;;
+    esac
+done
 
-parse_args "$@"
+[ -d "$here/installer" ] || { echo "installer/ folder not found next to install.sh"; exit 1; }
+. "$here/installer/lib.sh"
 
-if [ "$action" = uninstall ]; then
-    uninstall_run
+if [ -n "$uninstall" ]; then
+    . "$here/installer/uninstall.sh"
     exit 0
 fi
 
-# ── 1. what to configure ──
+# ── 1. compositors ──
+if [ -z "$want_niri$want_hypr" ]; then
+    [ -d "$cfg/niri" ] && want_niri=1
+    [ -d "$cfg/hypr" ] && want_hypr=1
+    if [ -z "$want_niri$want_hypr" ]; then
+        command -v niri >/dev/null 2>&1 && want_niri=1
+        command -v Hyprland >/dev/null 2>&1 && want_hypr=1
+    fi
+    [ -z "$want_niri$want_hypr" ] && { echo "niri / Hyprland not found: use --niri, --hyprland or --all"; exit 1; }
+fi
 step "1/6" "Looking for niri / Hyprland"
-detect_compositors
-[ -n "$want_niri" ] && say "niri: will be configured"
-[ -n "$want_hypr" ] && say "Hyprland: will be configured"
+[ -n "$want_niri" ] && say "niri: found"
+[ -n "$want_hypr" ] && say "Hyprland: found"
 
+# ── which kind of install ──
 if [ -z "$mode" ]; then
-    mode=light
-    if [ -z "$yes" ] && [ -r /dev/tty ]; then
-        printf '\n    How do you want to install it?\n'
-        printf '      1) light: adds a few lines to your configs, skips the keys you already use (nothing replaced)\n'
-        printf '      2) full:  our niri / Hyprland configs, like the screenshots (yours are backed up)\n'
-        printf '    Choice [1]: '
+    if [ -n "$yes" ]; then
+        mode=light
+    else
+        cat <<'M'
+
+    Which kind of install?
+
+      1) LIGHT  (recommended if you already have your own config)
+         Installs the shell and adds only a few lines to your niri / Hyprland config
+         (an include for the shell shortcuts + the startup of the shell).
+         Your config is not replaced. If a shortcut is already yours, it is skipped
+         and listed at the end.
+
+      2) FULL   (what the author uses)
+         Also installs the author's compositor config (gaps, rules, window shortcuts,
+         animations...). Your config.kdl / hyprland.lua are replaced, a backup is saved first.
+
+M
+        printf '    Choose [1/2] (default 1): '
         read -r c </dev/tty || c=1
-        case "$c" in 2|full|f|F) mode=full ;; esac
+        case "$c" in 2) mode=full ;; *) mode=light ;; esac
     fi
 fi
-say "mode: $mode"
+say "install type: $mode"
 
-# ── 2. programs ──
-if [ -z "$nodeps" ]; then
-    step "2/6" "Checking the programs the shell needs"
-    deps_check
+. "$here/installer/deps.sh"       # 2. programs
+mkdir -p "$bk"
+step "3/6" "Backup of what will be replaced"
+say "backup in $bk"
+. "$here/installer/shells.sh"      # 4. other shells
+. "$here/installer/shell.sh"       # 5. the shell itself
+
+if [ "$mode" = full ]; then
+    . "$here/installer/full.sh"
 else
-    step "2/6" "Programs check skipped (--no-deps)"
+    [ -n "$want_niri" ] && . "$here/installer/light-niri.sh"
+    [ -n "$want_hypr" ] && . "$here/installer/light-hypr.sh"
 fi
 
-# ── 3. other shells ──
-if [ -z "$noothers" ]; then
-    step "3/6" "Looking for other shells that would conflict"
-    others_run
-else
-    step "3/6" "Other shells: skipped (--no-others)"
-fi
-
-# ── 4. shell + compositor ──
-step "4/6" "Installing the shell and the compositor setup"
-say "backup folder: $bk"
-say "shell -> $cfg/quickshell"
-backup "$cfg/quickshell"
-mkdir -p "$cfg/quickshell"
-cp -a "$here/quickshell/." "$cfg/quickshell/"
-chmod +x "$cfg/quickshell/scripts/"*.sh
-
-if [ "$mode" = light ]; then
-    [ -n "$want_niri" ] && light_niri
-    [ -n "$want_hypr" ] && light_hypr
-    light_report
-else
-    [ -n "$want_niri" ] && full_niri
-    [ -n "$want_hypr" ] && full_hypr
-fi
-state_write
-
-# ── 5. wallpapers and Firefox ──
-step "5/6" "Wallpapers"
-wp=$(sh "$cfg/quickshell/scripts/wallpaper-dir.sh")
-mkdir -p "$wp"
-say "folder: $wp"
-if [ -d "$here/wallpapers" ] && ls "$here/wallpapers" | grep -qiE '\.(jpe?g|png|webp)$'; then
-    cp -n "$here/wallpapers/"* "$wp/" 2>/dev/null || true
-    say "copied the wallpapers that come with the shell"
-fi
-n=$(ls "$wp" 2>/dev/null | grep -ciE '\.(jpe?g|png|webp)$' || true)
-say "$n image(s) there. Put more in that folder: Alt+W opens the picker."
-if [ -z "$nodeps" ]; then
-    printf '\n'
-    pywalfox_setup
-fi
-
-# ── 6. start ──
-step "6/6" "Starting"
-if [ -z "$nostart" ] && [ -n "$WAYLAND_DISPLAY" ] && { [ -n "$NIRI_SOCKET" ] || [ -n "$HYPRLAND_INSTANCE_SIGNATURE" ]; } && command -v qs >/dev/null 2>&1; then
-    if confirm "Start the shell now?"; then
-        pkill -x quickshell 2>/dev/null || true
-        sleep 0.5
-        setsid qs >/dev/null 2>&1 &
-        say "shell started"
-    fi
-else
-    say "not inside a niri / Hyprland session (or --no-start): the shell starts at your next login"
-fi
-
-printf '\n\033[1mDone.\033[0m Now reload:\n'
-[ -n "$want_niri" ] && say "niri:     niri msg action load-config-file"
-[ -n "$want_hypr" ] && say "Hyprland: hyprctl reload"
-say "shell:    qs kill; qs   (if it is not already running)"
-say "undo:     sh install.sh --uninstall"
+. "$here/installer/finish.sh"      # 6. wallpapers, Firefox, autostart, start

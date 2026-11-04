@@ -38,6 +38,10 @@ Rectangle {
     readonly property string extra: timerOn ? "timer" : (musicOn ? "music" : (hot ? "stats" : ""))
     readonly property int closedW: baseW + (extra === "" ? 0 : 120)
 
+    // Attached version: when the volume or brightness changes, the closed bar itself becomes the OSD
+    readonly property bool osdOn: attached && OsdState.shown && mode === "closed"
+    readonly property int osdW: 320
+
     // Border flash (workspace change, new notification)
     property bool flash: false
     function pulse() { flash = true; flashTimer.restart() }
@@ -85,7 +89,7 @@ Rectangle {
         page = pager[i]
     }
 
-    width: mode === "open" ? cardW : (mode === "peek" ? peekW : closedW)
+    width: mode === "open" ? cardW : (mode === "peek" ? peekW : (osdOn ? osdW : closedW))
     height: mode === "open" ? cardH : (mode === "peek" ? peekH : Theme.islandHeight)
     // Colors of the edge (the "Attached" version draws it with AttachedShape, from the bar)
     readonly property color edgeColor: flash ? Theme.accent
@@ -205,14 +209,50 @@ Rectangle {
         return null
     }
 
+    // ---------- Attached version: the bar turned into the volume / brightness OSD ----------
+    Item {
+        id: osdView
+        width: root.osdW
+        height: Theme.islandHeight
+        opacity: root.osdOn ? 1 : 0
+        visible: opacity > 0
+        Behavior on opacity { NumberAnimation { duration: root.osdOn ? 220 : 90 } }
+
+        SliderBar {
+            anchors.left: parent.left
+            anchors.leftMargin: 14
+            anchors.right: parent.right
+            anchors.rightMargin: 62
+            anchors.verticalCenter: parent.verticalCenter
+            height: 24
+            implicitHeight: 24
+            enabled: false
+            value: OsdState.value
+            icon: OsdState.icon
+            iconLevel: OsdState.iconLevel
+            track: Theme.mix(Theme.island, Theme.foreground, 0.14)
+        }
+
+        Text {
+            anchors.right: parent.right
+            anchors.rightMargin: 20
+            anchors.verticalCenter: parent.verticalCenter
+            text: Math.round(OsdState.value * 100) + "%"
+            color: Theme.foreground
+            font.family: Theme.fontFamily
+            font.pixelSize: 12
+            font.bold: true
+        }
+    }
+
     // ---------- Closed: workspaces · clock · wifi + battery ----------
     Item {
         id: closedView
         width: root.closedW
         height: Theme.islandHeight
-        opacity: root.mode === "closed" ? 1 : 0
+        opacity: (root.mode === "closed" && !root.osdOn) ? 1 : 0
         visible: opacity > 0
-        Behavior on opacity { NumberAnimation { duration: root.mode === "closed" ? 200 : 90 } }
+        Behavior on opacity { NumberAnimation { duration: (root.mode === "closed" && !root.osdOn) ? 200 : 90 } }
 
         Row {
             x: 14
